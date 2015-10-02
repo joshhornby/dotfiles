@@ -9,6 +9,10 @@ then
   alias la='gls -A --color'
 fi
 
+# cd
 alias ..="cd .."
 alias ...="cd ../.."
 alias ....="cd ../../.."
+
+# dotfiles
+alias df="cd ~/.dotfiles"

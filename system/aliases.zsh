@@ -16,3 +16,6 @@ alias ....="cd ../../.."
 
 # dotfiles
 alias df="cd ~/.dotfiles"
+
+# misc
+alias edit-host="sudo vim /etc/hosts"

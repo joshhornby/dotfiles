@@ -2,7 +2,7 @@ autoload colors && colors
 # cheers, @ehrenmurdick
 # http://github.com/ehrenmurdick/config/blob/master/zsh/prompt.zsh
 # Set RHS prompt for git repositories
-DIFF_SYMBOL="-"
+DIFF_SYMBOL="•"
 CHECK_SYMBOL="✔"
 CROSS_SYMBOL="✖"
 GIT_PROMPT_SYMBOL=""
@@ -11,7 +11,7 @@ GIT_PROMPT_SUFFIX="%{$fg[violet]%}%B)%b%{$reset_color%}"
 GIT_PROMPT_AHEAD="%{$fg[teal]%}%B+NUM%b%{$reset_color%}"
 GIT_PROMPT_BEHIND="%{$fg[orange]%}%B-NUM%b%{$reset_color%}"
 GIT_PROMPT_MERGING="%{$fg[cyan]%}%Bx%b%{$reset_color%}"
-GIT_PROMPT_UNTRACKED="%{$fg[red]%}%B$CROSS_SYMBOL%b%{$reset_color%}"
+GIT_PROMPT_UNTRACKED="%{$fg[yellow]%}%B$CROSS_SYMBOL%b%{$reset_color%}"
 GIT_PROMPT_MODIFIED="%{$fg[red]%}%B$CROSS_SYMBOL%b%{$reset_color%}"
 GIT_PROMPT_STAGED="%{$fg[green]%}%B$CHECK_SYMBOL%b%{$reset_color%}"
 GIT_PROMPT_DETACHED="%{$fg[neon]%}%B!%b%{$reset_color%}"

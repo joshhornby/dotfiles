@@ -3,7 +3,7 @@
     showIndentGuide: true
     fontFamily: "Menlo"
     invisibles: {}
-    fontSize: 15
+    fontSize: 13
     softWrapAtPreferredLineLength: true
   core:
     ignoredNames: [
@@ -15,8 +15,8 @@
       "vendor"
     ]
     themes: [
-      "unity-ui"
-      "glacier-syntax"
+      "atom-dark-ui"
+      "base16-tomorrow-dark-theme"
     ]
     hideGitIgnoredFiles: true
     disabledPackages: [

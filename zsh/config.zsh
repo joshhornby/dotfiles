@@ -4,6 +4,17 @@ else
   export PS1='%3~$(git_info_for_prompt)%# '
 fi
 
+# save path on cd
+function cd {
+    builtin cd $@
+    pwd > ~/.last_dir
+}
+
+# restore last saved path - mainly used when opening a new tab
+if [ -f ~/.last_dir ]
+    then cd `cat ~/.last_dir`
+fi
+
 export LSCOLORS="exfxcxdxbxegedabagacad"
 export CLICOLOR=true
 

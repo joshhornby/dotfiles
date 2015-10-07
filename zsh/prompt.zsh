@@ -92,15 +92,6 @@ unpushed () {
   $git cherry -v @{upstream} 2>/dev/null
 }
 
-need_push () {
-  if [[ $(unpushed) == "" ]]
-  then
-    echo " "
-  else
-    echo " with %{$fg_bold[magenta]%}unpushed%{$reset_color%} "
-  fi
-}
-
 # Credit: https://github.com/jackfranklin/dotfiles/blob/6e150a68eb1970789b3a8a39e584294880e85650/zsh/prompt#L42
 
 # Current directory, truncated to 3 path elements (or 4 when one of them is "~")
@@ -148,7 +139,7 @@ function git_prompt_string() {
     fi
 }
 
-export PROMPT=$'\nin $(directory_name) $(git_prompt_string)$(need_push)\n› '
+export PROMPT=$'\nin $(directory_name) $(git_prompt_string)\n› '
 set_prompt () {
   export RPROMPT="%{$fg_bold[red]%}%{$reset_color%}"
 }

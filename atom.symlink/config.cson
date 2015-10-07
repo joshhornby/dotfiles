@@ -15,8 +15,8 @@
       "vendor"
     ]
     themes: [
-      "atom-dark-ui"
-      "base16-tomorrow-dark-theme"
+      "nucleus-dark-ui"
+      "one-dark-syntax"
     ]
     hideGitIgnoredFiles: true
     disabledPackages: [

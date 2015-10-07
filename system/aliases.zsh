@@ -19,3 +19,5 @@ alias df="cd ~/.dotfiles"
 
 # misc
 alias edit-host="sudo vim /etc/hosts"
+
+alias nah='git clean -df; git checkout -- .'

@@ -36,6 +36,7 @@ DETACHED="\u27a6"
 CROSS="\u2718"
 LIGHTNING="\u26a1"
 GEAR="\u2699"
+ROCKET="\xF0\x9F\x9A\x80  "
 
 # Begin a segment
 # Takes two arguments, background and foreground. Both can be omitted,
@@ -72,7 +73,7 @@ prompt_context() {
   local user=`whoami`
 
   if [[ "$user" != "$DEFAULT_USER" || -n "$SSH_CONNECTION" ]]; then
-    prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$user"
+    prompt_segment $PRIMARY_FG default " %(!.%{%F{yellow}%}.)$ROCKET"
   fi
 }
 

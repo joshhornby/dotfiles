@@ -15,8 +15,8 @@
       "vendor"
     ]
     themes: [
-      "nucleus-dark-ui"
-      "one-dark-syntax"
+      "one-dark-ui"
+      "chester-atom-syntax"
     ]
     hideGitIgnoredFiles: true
     disabledPackages: [
@@ -34,3 +34,8 @@
     showOnStartup: false
   "release-notes":
     viewedVersion: "0.89.0"
+  "file-watcher":
+    promptWhenFileHasChangedOnDisk: false
+  nuclide:
+    remoteProjectsConfig: []
+  "one-dark-ui": {}

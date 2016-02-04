@@ -1,11 +1,11 @@
 "*":
-  editor:
-    showIndentGuide: true
-    fontFamily: "Menlo"
-    invisibles: {}
-    fontSize: 13
-    softWrapAtPreferredLineLength: true
   core:
+    disabledPackages: [
+      "background-tips"
+      "exception-reporting"
+      "metrics"
+    ]
+    hideGitIgnoredFiles: true
     ignoredNames: [
       ".bundle"
       ".git"
@@ -18,12 +18,23 @@
       "one-dark-ui"
       "chester-atom-syntax"
     ]
-    hideGitIgnoredFiles: true
-    disabledPackages: [
-      "background-tips"
-      "exception-reporting"
-      "metrics"
-    ]
+  editor:
+    fontFamily: "Menlo"
+    fontSize: 13
+    invisibles: {}
+    showIndentGuide: true
+    softWrapAtPreferredLineLength: true
+  "ember-cli-helper": {}
+  "file-watcher":
+    promptWhenFileHasChangedOnDisk: false
+  "language-elm":
+    elmOraclePath: "/usr/local/bin/elm-oracle"
+  "linter-eslint": {}
+  nuclide:
+    remoteProjectsConfig: []
+  "one-dark-ui": {}
+  "release-notes":
+    viewedVersion: "0.89.0"
   "spell-check":
     grammars: [
       "text.plain"
@@ -32,10 +43,3 @@
     ]
   welcome:
     showOnStartup: false
-  "release-notes":
-    viewedVersion: "0.89.0"
-  "file-watcher":
-    promptWhenFileHasChangedOnDisk: false
-  nuclide:
-    remoteProjectsConfig: []
-  "one-dark-ui": {}

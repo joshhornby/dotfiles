@@ -1,0 +1,8 @@
+alias nah='git reset --hard;git clean -df'
+alias ..="cd .."
+alias ...="cd ../.."
+alias gp='git pull'
+alias gpb='git push origin `git rev-parse --abbrev-ref HEAD`'
+alias gpbf='git push origin `git rev-parse --abbrev-ref HEAD` --force'
+
+alias brew='sudo -u josh.hornby-adm /opt/homebrew/bin/brew'

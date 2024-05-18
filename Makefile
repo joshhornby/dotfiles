@@ -1,0 +1,2 @@
+reload:
+	stow -D . && stow .

@@ -108,13 +108,11 @@ source $ZSH/oh-my-zsh.sh
 export CLICOLOR=1
 export LSCOLORS=GxFxCxDxBxegedabagaced
 PS1='%F{green}%n@%m%f %F{yellow}%1~%f %F{magenta}%#%f '
-#PS1='%n@%m %~$ '
 
 
 if [[ -r ~/.aliases ]]; then
     . ~/.aliases
 fi
-
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

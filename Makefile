@@ -1,2 +1,2 @@
 reload:
-	stow -D . && stow .
+	stow --target=$$HOME --restow .

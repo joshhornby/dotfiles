@@ -39,10 +39,11 @@ truncate_branch_name() {
     echo $branch_name
 }
 
+zstyle ':vcs_info:*' check-for-changes true
+zstyle ':vcs_info:*' stagedstr " %F{yellow}✚ "
+zstyle ':vcs_info:*' unstagedstr " %F{red}● "
 zstyle ':vcs_info:*' formats '%b%u%c'
 zstyle ':vcs_info:*' actionformats '%b|%a%u%c'
-zstyle ':vcs_info:*' check-for-changes true
-zstyle ':vcs_info:*' check-for-staged-changes true
 zstyle ':vcs_info:*' branch-hooks
 zstyle ':vcs_info:*+branch-hook' branch-hook truncate_branch_name
 

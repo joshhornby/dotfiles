@@ -1,4 +1,5 @@
 .git
+.gitignore
 .idea
 README.md
 Makefile

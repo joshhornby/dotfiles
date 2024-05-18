@@ -29,18 +29,30 @@ source $ZSH/oh-my-zsh.sh
 autoload -Uz vcs_info
 setopt prompt_subst
 
-zstyle ':vcs_info:*' formats " [%b]%u%c"
-zstyle ':vcs_info:*' actionformats " [%b|%a]%u%c"
+# Function to truncate branch names
+truncate_branch_name() {
+    local maxlen=40
+    local branch_name=$1
+    if (( ${#branch_name} > maxlen )); then
+        branch_name="${branch_name[1,maxlen]}.."
+    fi
+    echo $branch_name
+}
+
+zstyle ':vcs_info:*' formats '%b%u%c'
+zstyle ':vcs_info:*' actionformats '%b|%a%u%c'
 zstyle ':vcs_info:*' check-for-changes true
 zstyle ':vcs_info:*' check-for-staged-changes true
+zstyle ':vcs_info:*' branch-hooks
+zstyle ':vcs_info:*+branch-hook' branch-hook truncate_branch_name
 
 precmd() {
     vcs_info
+    vcs_info_msg_0_=$(truncate_branch_name "${vcs_info_msg_0_}")
 }
 
 PROMPT='%F{green}%n@%m%f %F{yellow}%1~%f %F{magenta}${vcs_info_msg_0_}%f%b '
 RPROMPT='%~'
-
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

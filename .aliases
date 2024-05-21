@@ -6,3 +6,10 @@ alias gpb='git push origin `git rev-parse --abbrev-ref HEAD`'
 alias gpbf='git push origin `git rev-parse --abbrev-ref HEAD` --force'
 
 alias brew='sudo -u josh.hornby-adm /opt/homebrew/bin/brew'
+
+rebase_against() {
+    local branch=${1:-release}
+    GIT_EDITOR="vim -c '2,\$s/pick/squash/g' -c 'wq'" git rebase -i --autosquash $branch
+}
+
+alias rebase-against=rebase_against

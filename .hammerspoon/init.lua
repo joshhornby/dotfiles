@@ -5,7 +5,6 @@ local function resizeAndPosition(appBundleID, xPos, yPos, width, height)
         local windows = app:allWindows()
         for _, window in pairs(windows) do
             window:setFrame(hs.geometry.rect(xPos, yPos, width, height))
-            window:raise()  -- Bring window to front
         end
     else
         hs.notify.new({title="Hammerspoon", informativeText=appBundleID .. " is not running"}):send()
@@ -20,10 +19,13 @@ local function openAppIfNeeded(appBundleID)
     end
 end
 
--- Function to bring applications to front and arrange them
+-- Function to bring applications to front and arrange them without changing PHPStorm window order
 local function bringAppsToFrontAndArrange()
     -- Open iTerm2 if it's not already open
     openAppIfNeeded("com.googlecode.iterm2")
+
+    -- Get current frontmost application
+    local frontApp = hs.application.frontmostApplication()
 
     -- Wait for a moment to ensure apps are ready
     hs.timer.doAfter(0.1, function()
@@ -34,8 +36,20 @@ local function bringAppsToFrontAndArrange()
         local itermWidth = screenWidth * 1 / 4
         local itermHeight = screenHeight / 2
 
+        -- Bring iTerm2 to the front and arrange it
+        local itermApp = hs.application.get("com.googlecode.iterm2")
+        if itermApp then
+            itermApp:unhide()
+            resizeAndPosition("com.googlecode.iterm2", phpstormWidth, 0, itermWidth, itermHeight)
+        end
+
+        -- Arrange PHPStorm windows without changing their order
         resizeAndPosition("com.jetbrains.PhpStorm", 0, 0, phpstormWidth, screenHeight)
-        resizeAndPosition("com.googlecode.iterm2", phpstormWidth, 0, itermWidth, itermHeight)
+
+        -- Refocus the previously focused application (PHPStorm)
+        if frontApp then
+            frontApp:activate()
+        end
     end)
 end
 

@@ -52,7 +52,7 @@ precmd() {
     vcs_info_msg_0_=$(truncate_branch_name "${vcs_info_msg_0_}")
 }
 
-PROMPT='%F{green}%n@%m%f %F{yellow}%1~%f %F{magenta}${vcs_info_msg_0_}%f%b '
+PROMPT='%F{yellow}%1~%f %F{magenta}${vcs_info_msg_0_}%f%b '
 RPROMPT='%~'
 
 export NVM_DIR="$HOME/.nvm"

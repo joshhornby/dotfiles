@@ -7,7 +7,7 @@ ZSH_THEME="robbyrussell"
 
 ENABLE_CORRECTION="true"
 
-plugins=(zsh-syntax-highlighting zsh-autosuggestions git)
+plugins=(zsh-syntax-highlighting zsh-autosuggestions)
 
 if [[ -r ~/.aliases ]]; then
     . ~/.aliases

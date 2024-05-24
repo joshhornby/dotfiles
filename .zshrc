@@ -1,5 +1,7 @@
 fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
+export PATH="/Applications/PhpStorm.app/Contents/MacOS:$PATH"
+
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 

@@ -1,10 +1,13 @@
-alias nah='git reset --hard;git clean -df'
 alias ..="cd .."
 alias ...="cd ../.."
+
 alias gp='git pull'
 alias gpb='git push origin `git rev-parse --abbrev-ref HEAD`'
 alias gpbf='git push origin `git rev-parse --abbrev-ref HEAD` --force'
 alias gprune="git for-each-ref --format '%(refname:short)' refs/heads | grep -v "release" | xargs git branch -D"
+alias nah='git reset --hard;git clean -df'
+
+alias dotfiles="phpstorm ~/dotfiles"
 
 rebase_against() {
     local branch=${1:-origin/release}

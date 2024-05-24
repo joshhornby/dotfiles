@@ -17,4 +17,18 @@ alias rebase-against=rebase_against
 
 alias ui='cd ~/code && cd onejourney-ui'
 alias api='cd ~/code && cd onejourney-api'
-alias brew='sudo -u josh.hornby-adm /opt/homebrew/bin/brew'
+
+# Function to run brew command as another user
+brew() {
+  if [ "$#" -lt 1 ]; then
+    echo "Usage: brew <brew command>"
+    return 1
+  fi
+
+  TARGET_USER="josh.hornby-adm"
+
+  # Concatenate all the arguments to form the brew command
+  BREW_COMMAND="/opt/homebrew/bin/brew $*"
+
+  su - "$TARGET_USER" -c "$BREW_COMMAND"
+}

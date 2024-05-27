@@ -9,4 +9,3 @@ set showmode
 " PHPSTORM
 
 :map tw :action ActivateTerminalToolWindow<CR>
-

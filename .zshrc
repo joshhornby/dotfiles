@@ -28,6 +28,10 @@ PROMPT_COMMAND='history -a'
 
 source $ZSH/oh-my-zsh.sh
 
+# make tab autosuggest accept key
+
+bindkey '\t' autosuggest-accept
+
 autoload -Uz vcs_info
 setopt prompt_subst
 

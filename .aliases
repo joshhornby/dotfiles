@@ -21,6 +21,9 @@ alias rebase-against=rebase_against
 alias ui='cd ~/code && cd onejourney-ui'
 alias api='cd ~/code && cd onejourney-api'
 
+alias uipr='open https://github.com/teamjourney/onejourney-ui/pulls'
+alias apipr='open https://github.com/teamjourney/onejourney-api/pulls'
+
 # Function to run brew command as another user
 brew() {
   if [ "$#" -lt 1 ]; then

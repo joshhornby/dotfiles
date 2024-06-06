@@ -43,6 +43,6 @@ done
 
 # Calculate and display the average response time
 AVERAGE_TIME=$(echo "scale=3; $TOTAL_TIME / $NUM_REQUESTS" | bc)
-echo "Average response time for $NUM_REQUESTS requests to $URL: $AVERAGE_TIME seconds"
+echo "Average response time: $AVERAGE_TIME seconds"
 echo "Minimum response time: $MIN_TIME seconds"
 echo "Maximum response time: $MAX_TIME seconds"

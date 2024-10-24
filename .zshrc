@@ -1,13 +1,13 @@
 fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
-export PATH="/Applications/PhpStorm.app/Contents/MacOS:$PATH"
+export PATH="/Applications/PhpStorm.app/Contents/MacOS:/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="robbyrussell"
 
-ENABLE_CORRECTION="true"
+#ENABLE_CORRECTION="true"
 
 plugins=(zsh-syntax-highlighting zsh-autosuggestions)
 

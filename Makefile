@@ -1,2 +1,2 @@
 reload:
-	stow --target=$$HOME --restow .
+	stow --target=$$HOME --restow . && cat ~/.crontab | crontab -

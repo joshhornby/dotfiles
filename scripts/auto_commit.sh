@@ -54,6 +54,13 @@ if git status --porcelain | grep -q '^'; then
         # Try to commit
         if git commit -m "Commit: $timestamp"; then
             log_message "Successfully committed changes on branch $CURRENT_BRANCH"
+
+            # Try to push changes
+            if git push origin "$CURRENT_BRANCH"; then
+                log_message "Successfully pushed changes to remote"
+            else
+                log_message "Error: Failed to push changes to remote"
+            fi
         else
             log_message "Error: Failed to commit changes"
         fi

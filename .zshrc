@@ -1,6 +1,6 @@
 fpath+=("$(brew --prefix)/share/zsh/site-functions")
 
-export PATH="/Applications/PhpStorm.app/Contents/MacOS:/opt/homebrew/opt/openjdk/bin:$PATH"
+export PATH="$(composer global config home --absolute)/vendor/bin:/Applications/PhpStorm.app/Contents/MacOS:/opt/homebrew/opt/openjdk/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
@@ -64,3 +64,5 @@ RPROMPT='%~'
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+. "$HOME/.local/bin/env"

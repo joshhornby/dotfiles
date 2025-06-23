@@ -38,3 +38,4 @@ brew() {
 
   su - "$TARGET_USER" -c "$BREW_COMMAND"
 }
+

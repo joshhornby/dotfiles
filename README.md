@@ -23,3 +23,7 @@ stow --target=$HOME --restow */
 ```
 
 [stow]: https://www.gnu.org/software/stow/
+
+### Miscellaneous
+
+`.claude` directory is a clone of https://github.com/iannuttall/claude-agents

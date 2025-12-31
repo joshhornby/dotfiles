@@ -9,11 +9,6 @@ alias nah='git reset --hard;git clean -df'
 
 alias dotfiles="phpstorm ~/dotfiles"
 
-rebase_against() {
-    local branch=${1:-origin/release}
-    GIT_EDITOR="vim -c '2,\$s/pick/squash/g' -c 'wq'" git rebase -i --autosquash $branch
-}
-
 alias rebase-against=rebase_against
 
 # Journey
@@ -25,6 +20,11 @@ alias uipr='open https://github.com/teamjourney/onejourney-ui/pulls'
 alias apipr='open https://github.com/teamjourney/onejourney-api/pulls'
 
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+
+rebase_against() {
+    local branch=${1:-origin/release}
+    GIT_EDITOR="vim -c '2,\$s/pick/squash/g' -c 'wq'" git rebase -i --autosquash $branch
+}
 
 # Function to run brew command as another user
 brew() {
@@ -41,3 +41,43 @@ brew() {
   su - "$TARGET_USER" -c "$BREW_COMMAND"
 }
 
+# Create a new worktree and branch from within current git directory.
+ga() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: ga [branch name]"
+    exit 1
+  fi
+
+  local branch="$1"
+  local base="$(basename "$PWD")"
+  local worktree_path="../${base}--${branch}"
+
+  git worktree add -b "$branch" "$worktree_path"
+  cd "$worktree_path"
+}
+
+# Remove worktree and branch from within active worktree directory.
+gd() {
+  local cwd worktree root branch
+
+  cwd="$(pwd)"
+  worktree="$(basename "$cwd")"
+
+  # split on first `--`
+  root="${worktree%%--*}"
+  branch="${worktree#*--}"
+
+  # Protect against accidentally nuking a non-worktree directory
+  if [[ "$root" == "$worktree" ]]; then
+    echo "Not in a worktree directory (expected format: repo--branch)"
+    return 1
+  fi
+
+  echo "Remove worktree '$worktree' and branch '$branch'? [y/N]"
+  read -r response
+  if [[ "$response" =~ ^[Yy]$ ]]; then
+    cd "../$root"
+    git worktree remove "$worktree" --force
+    git branch -D "$branch"
+  fi
+}

@@ -8,9 +8,6 @@ export PATH="$HOME/.composer/vendor/bin:/Applications/PhpStorm.app/Contents/MacO
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Initialize completion arrays to prevent compdef errors in subshells
-typeset -gA _comps _services _patcomps _postpatcomps 2>/dev/null
-
 ZSH_THEME="robbyrussell"
 
 #ENABLE_CORRECTION="true"

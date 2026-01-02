@@ -73,16 +73,9 @@ precmd() {
 PROMPT='%F{yellow}%1~%f %F{magenta}${vcs_info_msg_0_}%f$(git_ahead_behind)%b '
 RPROMPT='%~'
 
-# Lazy load NVM for faster shell startup
+# NVM
 export NVM_DIR="$HOME/.nvm"
-lazy_load_nvm() {
-    unset -f nvm node npm npx
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-}
-nvm() { lazy_load_nvm && nvm "$@"; }
-node() { lazy_load_nvm && node "$@"; }
-npm() { lazy_load_nvm && npm "$@"; }
-npx() { lazy_load_nvm && npx "$@"; }
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 
 . "$HOME/.local/bin/env"

@@ -3,7 +3,7 @@ fpath+=("$(brew --prefix)/share/zsh/site-functions")
 # Prevent duplicate PATH entries
 typeset -U PATH path
 
-export PATH="$HOME/.composer/vendor/bin:/Applications/PhpStorm.app/Contents/MacOS:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/libpq/bin:$PATH"
+export PATH="$HOME/dotfiles/scripts:$HOME/.composer/vendor/bin:/Applications/PhpStorm.app/Contents/MacOS:/opt/homebrew/opt/openjdk/bin:/opt/homebrew/opt/libpq/bin:$PATH"
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"

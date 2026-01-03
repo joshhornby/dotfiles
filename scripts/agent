@@ -1,0 +1,157 @@
+#!/bin/bash
+
+# agent - manage parallel Claude Code workstreams using git worktrees
+#
+# This script creates isolated working directories for running multiple
+# Claude Code instances in parallel on the same repo. Each agent gets
+# its own worktree and branch, so they can work independently without
+# conflicts.
+#
+# Prerequisites:
+#   - GitHub CLI (gh) installed and authenticated
+#   - iTerm2 (for tab management)
+#   - Claude Code CLI (claude)
+#
+# Usage:
+#   agent setup              Create worktrees and open iTerm tabs with Claude
+#   agent start <n> [branch] Reset agent n to main, optionally merge a branch
+#   agent status             Show commit/dirty status for each agent
+#   agent cleanup            Remove all worktrees and agent branches
+#
+# Example workflow:
+#   1. cd into your project
+#   2. Run: agent setup
+#   3. Give each Claude instance a different task
+#   4. Use: agent status  to monitor progress
+#   5. When done: agent cleanup
+
+set -e
+
+PROJECT_ROOT=$(git rev-parse --show-toplevel)
+PROJECT_NAME=$(basename "$PROJECT_ROOT")
+AGENT_COUNT=3
+
+case "$1" in
+  setup)
+    echo "Checking dependencies..."
+
+    if ! command -v gh &> /dev/null; then
+      echo "Error: GitHub CLI (gh) is not installed"
+      echo "  brew install gh  (macOS)"
+      exit 1
+    fi
+
+    if ! gh auth status &> /dev/null; then
+      echo "Error: GitHub CLI is not authenticated"
+      echo "  Run: gh auth login"
+      exit 1
+    fi
+
+    echo "Dependencies OK"
+    echo ""
+
+    for i in $(seq 1 $AGENT_COUNT); do
+      worktree="../${PROJECT_NAME}-agent-${i}"
+      branch="agent-${i}"
+
+      if [ ! -d "$worktree" ]; then
+        echo "Creating worktree for agent $i..."
+        git branch -f "$branch" main 2>/dev/null || git branch "$branch" main
+        git worktree add "$worktree" "$branch"
+      else
+        echo "Worktree for agent $i already exists"
+      fi
+    done
+
+    echo ""
+    echo "Opening iTerm tabs..."
+
+    osascript <<EOF
+tell application "iTerm"
+  activate
+  tell current window
+    -- Main tab (no claude, just navigate)
+    tell current session
+      write text "cd \"$PROJECT_ROOT\" && clear"
+    end tell
+
+    -- Agent tabs
+    repeat with i from 1 to $AGENT_COUNT
+      set newTab to (create tab with default profile)
+      tell current session of newTab
+        write text "cd \"$PROJECT_ROOT/../${PROJECT_NAME}-agent-" & i & "\" && claude"
+      end tell
+    end repeat
+
+    -- Go back to first tab
+    select tab 1
+  end tell
+end tell
+EOF
+
+    echo "Done. iTerm tabs opened for main + $AGENT_COUNT agents."
+    ;;
+
+  start)
+    agent_num="${2:?Usage: agent start <n> [branch]}"
+    branch="${3:-}"
+    worktree="${PROJECT_ROOT}/../${PROJECT_NAME}-agent-${agent_num}"
+    agent_branch="agent-${agent_num}"
+
+    cd "$worktree"
+
+    git checkout "$agent_branch"
+    git fetch origin main
+    git reset --hard origin/main
+
+    if [ -n "$branch" ]; then
+      git merge "origin/$branch" --no-edit 2>/dev/null || git merge "$branch" --no-edit
+      echo "Agent $agent_num ready with $branch"
+    else
+      echo "Agent $agent_num reset to main"
+    fi
+    ;;
+
+  status)
+    echo "Agent status:"
+    echo ""
+    for i in $(seq 1 $AGENT_COUNT); do
+      worktree="${PROJECT_ROOT}/../${PROJECT_NAME}-agent-${i}"
+      agent_branch="agent-${i}"
+
+      if [ -d "$worktree" ]; then
+        cd "$worktree"
+        ahead=$(git rev-list origin/main.."$agent_branch" --count 2>/dev/null || echo "?")
+        dirty=$(git status --porcelain | wc -l | tr -d ' ')
+        last_msg=$(git log -1 --pretty=%s 2>/dev/null || echo "no commits")
+
+        echo "  Agent $i: $ahead commit(s) ahead, $dirty file(s) dirty"
+        echo "           Last: $last_msg"
+      else
+        echo "  Agent $i: not set up"
+      fi
+    done
+    ;;
+
+  cleanup)
+    echo "Removing worktrees and branches..."
+    for i in $(seq 1 $AGENT_COUNT); do
+      worktree="${PROJECT_ROOT}/../${PROJECT_NAME}-agent-${i}"
+      branch="agent-${i}"
+
+      git worktree remove "$worktree" --force 2>/dev/null || true
+      git branch -D "$branch" 2>/dev/null || true
+    done
+    echo "Done"
+    ;;
+
+  *)
+    echo "Usage: agent <command>"
+    echo ""
+    echo "Commands:"
+    echo "  setup              Create worktrees and open iTerm tabs"
+    echo "  start <n> [branch] Reset agent n to main, optionally merge in branch"
+    echo "  status             Show what each agent is working on"
+    echo "  cleanup            Remove worktrees and branches"
+    ;;
+esac

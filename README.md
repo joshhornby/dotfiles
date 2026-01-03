@@ -1,25 +1,31 @@
 ## Josh's Dotfiles
 
-This repo uses [stow][] to manage the symlinks, but you don't **have** to --
-you can also just individually symlink the contents of each directory directly
-into your home.
-
-If you want to use stow, clone this repository into `~/dotfiles` and do
+### Quick Start
 
 ```sh
+git clone https://github.com/joshhornby/dotfiles.git ~/dotfiles
 cd ~/dotfiles
-stow --restow */
+./scripts/init
 ```
 
-stow will automatically symlink the contents of each "package" into the parent
-directory from where it is invoked (i.e. your home directory), that's why it
-is important to clone this repository directly into your home directory. If
-you cloned the repository somewhere else, you can use the `--target`
-parameter.
+This installs Homebrew and dependencies, then symlinks everything via [stow][].
+
+### Manual Setup
+
+If you prefer to set things up manually:
 
 ```sh
-cd ~/path/to/dotfiles
-stow --target=$HOME --restow */
+brew install stow gh
+cd ~/dotfiles
+make reload
 ```
+
+### Scripts
+
+| Command | Description |
+|---------|-------------|
+| `agent setup` | Create git worktrees and iTerm tabs for parallel Claude Code instances |
+| `agent status` | Show progress of each agent |
+| `agent cleanup` | Remove worktrees and branches |
 
 [stow]: https://www.gnu.org/software/stow/

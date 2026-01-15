@@ -1,11 +1,11 @@
 ---
-name: wiggum-lite
+name: blueprint
 description: Iterative spec-driven development workflow using subagents. Use when user wants to build a feature from scratch, needs help writing a detailed spec, or asks for implementation with verification. Triggers on phrases like "build this feature", "implement and verify", "spec this out", "develop with tests", or requests involving multi-phase development with quality gates.
 ---
 
-# Wiggum Lite
+# Blueprint
 
-A streamlined development workflow inspired by the Ralph Wiggum technique. Iterates through spec → implement → verify → simplify phases using subagents.
+A spec-first development workflow that iterates through spec → implement → verify → simplify phases using subagents.
 
 ## Philosophy
 
@@ -183,7 +183,7 @@ After simplification: **re-run Phase 3 verification** to ensure nothing broke.
 When all phases complete:
 1. Summarize what was built
 2. List any deferred items for future
-3. Output: WIGGUM_COMPLETE
+3. Output: BLUEPRINT_COMPLETE
 
 ## Iteration Limits
 

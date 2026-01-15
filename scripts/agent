@@ -79,7 +79,7 @@ tell application "iTerm"
     repeat with i from 1 to $AGENT_COUNT
       set newTab to (create tab with default profile)
       tell current session of newTab
-        write text "cd \"$PROJECT_ROOT/../${PROJECT_NAME}-agent-" & i & "\" && claude"
+        write text "cd \"$PROJECT_ROOT/../${PROJECT_NAME}-agent-" & i & "\" && ([ -f composer.json ] && composer install || true) && ([ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use || true) && ([ -f package.json ] && npm i || true) && claude"
       end tell
     end repeat
 

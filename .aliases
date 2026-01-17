@@ -21,6 +21,15 @@ alias apipr='open https://github.com/teamjourney/onejourney-api/pulls'
 
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 
+# Worktrunk aliases (replaces hand-rolled 'agent' script)
+# Install: brew install max-sixty/worktrunk/wt && wt config shell install
+# See: https://worktrunk.dev/
+alias wtc='wt switch -c'              # Create new worktree
+alias wtcc='wt switch -c -x claude'   # Create worktree + start Claude
+alias wtl='wt list'                   # List worktrees with status
+alias wtm='wt merge'                  # Squash, merge, cleanup
+alias wtr='wt remove'                 # Remove current worktree
+
 rebase_against() {
     local branch=${1:-origin/release}
     GIT_EDITOR="vim -c '2,\$s/pick/squash/g' -c 'wq'" git rebase -i --autosquash $branch
@@ -41,6 +50,9 @@ brew() {
   su - "$TARGET_USER" -c "$BREW_COMMAND"
 }
 
+# Legacy worktree functions (kept for backward compatibility)
+# For AI agent workflows, prefer Worktrunk: wtcc feature-name
+#
 # Create a new worktree and branch from within current git directory.
 ga() {
   if [[ -z "$1" ]]; then

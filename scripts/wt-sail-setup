@@ -1,0 +1,106 @@
+#!/bin/bash
+
+# wt-sail-setup - Configure a Laravel project for Worktrunk + Sail
+#
+# This script creates a .config/wt.toml in your Laravel project that:
+# - Uses hash_port to generate unique APP_PORT per worktree (no port conflicts)
+# - Uses hash_port to generate unique FORWARD_DB_PORT per worktree
+# - Automatically runs sail up -d after creating a worktree
+#
+# Usage:
+#   cd your-laravel-project
+#   wt-sail-setup
+#
+# Then use Worktrunk normally:
+#   wt switch -c -x claude feature-name
+#
+# Each worktree gets its own Sail containers on unique ports!
+
+set -e
+
+if [ ! -f "composer.json" ] || ! grep -q "laravel/sail" composer.json 2>/dev/null; then
+    echo "Warning: This doesn't look like a Laravel Sail project"
+    echo "Make sure laravel/sail is installed: composer require laravel/sail --dev"
+fi
+
+mkdir -p .config
+
+cat > .config/wt.toml << 'EOF'
+# Worktrunk config for Laravel Sail
+#
+# Each worktree gets unique ports via hash_port (range: 10000-19999)
+# This allows multiple Sail containers to run in parallel without conflicts.
+#
+# Dev URLs per worktree:
+#   main:    http://localhost:80
+#   feature: http://localhost:{hash_port based on branch name}
+
+[hooks.post-create]
+# Update .env with unique ports for this worktree
+env-setup = """
+if [ -f .env.example ] && [ ! -f .env ]; then
+  cp .env.example .env
+fi
+if [ -f .env ]; then
+  # Set unique APP_PORT (for nginx/web)
+  if grep -q "^APP_PORT=" .env; then
+    sed -i.bak 's/^APP_PORT=.*/APP_PORT={{ branch | hash_port }}/' .env
+  else
+    echo "APP_PORT={{ branch | hash_port }}" >> .env
+  fi
+  # Set unique DB port (for mysql)
+  DB_PORT=$(({{ branch | hash_port }} + 1000))
+  if grep -q "^FORWARD_DB_PORT=" .env; then
+    sed -i.bak "s/^FORWARD_DB_PORT=.*/FORWARD_DB_PORT=$DB_PORT/" .env
+  else
+    echo "FORWARD_DB_PORT=$DB_PORT" >> .env
+  fi
+  # Set unique Redis port
+  REDIS_PORT=$(({{ branch | hash_port }} + 2000))
+  if grep -q "^FORWARD_REDIS_PORT=" .env; then
+    sed -i.bak "s/^FORWARD_REDIS_PORT=.*/FORWARD_REDIS_PORT=$REDIS_PORT/" .env
+  else
+    echo "FORWARD_REDIS_PORT=$REDIS_PORT" >> .env
+  fi
+  rm -f .env.bak
+fi
+"""
+
+# Install PHP dependencies
+composer = "composer install --quiet"
+
+# Start Sail containers in detached mode
+sail = "vendor/bin/sail up -d"
+
+# Install npm dependencies and build
+npm = "[ -f package.json ] && vendor/bin/sail npm install && vendor/bin/sail npm run build || true"
+
+[hooks.post-switch]
+# Ensure containers are running when switching to a worktree
+sail = "vendor/bin/sail up -d"
+
+[hooks.pre-merge]
+# Run tests before merging (optional - uncomment if desired)
+# test = "vendor/bin/sail test"
+
+# Run linting before merging (optional)
+# lint = "vendor/bin/sail pint --test"
+EOF
+
+echo "Created .config/wt.toml"
+echo ""
+echo "Worktrunk is now configured for Laravel Sail!"
+echo ""
+echo "Usage:"
+echo "  wt switch -c -x claude feature-name   # Create worktree + start Claude"
+echo "  wt switch feature-name                 # Switch to existing worktree"
+echo "  wt list                                # List all worktrees"
+echo "  wt merge                               # Squash, merge, cleanup"
+echo ""
+echo "Each worktree gets unique ports automatically:"
+echo "  - APP_PORT: hash_port (10000-19999 range)"
+echo "  - FORWARD_DB_PORT: hash_port + 1000"
+echo "  - FORWARD_REDIS_PORT: hash_port + 2000"
+echo ""
+echo "Don't forget to add .config/wt.toml to your .gitignore if you want"
+echo "this config to be local-only, or commit it to share with your team."

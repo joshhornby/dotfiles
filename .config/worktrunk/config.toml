@@ -1,0 +1,34 @@
+# Worktrunk global configuration
+# Stowed to ~/.config/worktrunk/config.toml
+#
+# This replaces the hand-rolled 'agent' script with Worktrunk's
+# git worktree management designed for parallel AI agent workflows.
+#
+# Quick reference:
+#   wt switch -c -x claude feat     # Create worktree + start Claude
+#   wt switch feat                  # Switch to existing worktree
+#   wt list                         # List all worktrees with status
+#   wt merge                        # Squash, merge, cleanup
+#   wt remove                       # Remove current worktree
+#
+# See: https://worktrunk.dev/
+
+# Worktree path pattern - keeps worktrees alongside the main repo
+# {main-worktree} = name of the main repo directory
+# {branch} = branch name
+worktree-path = "../{main-worktree}--{branch}"
+
+# Default hooks that run for all projects
+# Project-specific hooks in .config/wt.toml override these
+[hooks]
+
+# Install dependencies after creating a new worktree
+[hooks.post-create]
+composer = "[ -f composer.json ] && composer install --quiet || true"
+npm = "[ -f package.json ] && npm install --silent || true"
+
+# Pre-merge validation (runs before wt merge)
+# Uncomment these for stricter validation:
+# [hooks.pre-merge]
+# lint = "npm run lint 2>/dev/null || true"
+# test = "npm test 2>/dev/null || true"

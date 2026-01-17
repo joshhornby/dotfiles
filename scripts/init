@@ -31,12 +31,9 @@ fi
 # Install dependencies
 echo ""
 echo "Installing dependencies..."
-brew install stow gh
+brew install stow gh max-sixty/worktrunk/wt
 
-# Install Worktrunk for parallel agent workflows
-echo ""
-echo "Installing Worktrunk..."
-brew install max-sixty/worktrunk/wt
+# Configure Worktrunk shell integration
 wt config shell install
 
 # Run make reload

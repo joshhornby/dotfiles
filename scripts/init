@@ -33,6 +33,12 @@ echo ""
 echo "Installing dependencies..."
 brew install stow gh
 
+# Install Worktrunk for parallel agent workflows
+echo ""
+echo "Installing Worktrunk..."
+brew install max-sixty/worktrunk/wt
+wt config shell install
+
 # Run make reload
 echo ""
 echo "Symlinking dotfiles..."

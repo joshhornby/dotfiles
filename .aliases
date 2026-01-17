@@ -21,6 +21,12 @@ alias apipr='open https://github.com/teamjourney/onejourney-api/pulls'
 
 alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
 
+alias wtc='wt switch -c'
+alias wtcc='wt switch -c -x claude'
+alias wtl='wt list'
+alias wtm='wt merge'
+alias wtr='wt remove'
+
 rebase_against() {
     local branch=${1:-origin/release}
     GIT_EDITOR="vim -c '2,\$s/pick/squash/g' -c 'wq'" git rebase -i --autosquash $branch
@@ -41,7 +47,6 @@ brew() {
   su - "$TARGET_USER" -c "$BREW_COMMAND"
 }
 
-# Create a new worktree and branch from within current git directory.
 ga() {
   if [[ -z "$1" ]]; then
     echo "Usage: ga [branch name]"

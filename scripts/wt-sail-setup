@@ -1,0 +1,50 @@
+#!/bin/bash
+
+set -e
+
+if [ ! -f "composer.json" ] || ! grep -q "laravel/sail" composer.json 2>/dev/null; then
+    echo "Warning: This doesn't look like a Laravel Sail project"
+    echo "Make sure laravel/sail is installed: composer require laravel/sail --dev"
+fi
+
+mkdir -p .config
+
+cat > .config/wt.toml << 'EOF'
+[hooks.post-create]
+env-setup = """
+if [ -f .env.example ] && [ ! -f .env ]; then
+  cp .env.example .env
+fi
+if [ -f .env ]; then
+  if grep -q "^APP_PORT=" .env; then
+    sed -i.bak 's/^APP_PORT=.*/APP_PORT={{ branch | hash_port }}/' .env
+  else
+    echo "APP_PORT={{ branch | hash_port }}" >> .env
+  fi
+  DB_PORT=$(({{ branch | hash_port }} + 1000))
+  if grep -q "^FORWARD_DB_PORT=" .env; then
+    sed -i.bak "s/^FORWARD_DB_PORT=.*/FORWARD_DB_PORT=$DB_PORT/" .env
+  else
+    echo "FORWARD_DB_PORT=$DB_PORT" >> .env
+  fi
+  REDIS_PORT=$(({{ branch | hash_port }} + 2000))
+  if grep -q "^FORWARD_REDIS_PORT=" .env; then
+    sed -i.bak "s/^FORWARD_REDIS_PORT=.*/FORWARD_REDIS_PORT=$REDIS_PORT/" .env
+  else
+    echo "FORWARD_REDIS_PORT=$REDIS_PORT" >> .env
+  fi
+  rm -f .env.bak
+fi
+"""
+composer = "composer install --quiet"
+sail = "vendor/bin/sail up -d"
+npm = "[ -f package.json ] && vendor/bin/sail npm install && vendor/bin/sail npm run build || true"
+
+[hooks.post-switch]
+sail = "vendor/bin/sail up -d"
+EOF
+
+echo "Created .config/wt.toml"
+echo ""
+echo "Each worktree gets unique ports via hash_port:"
+echo "  APP_PORT, FORWARD_DB_PORT (+1000), FORWARD_REDIS_PORT (+2000)"

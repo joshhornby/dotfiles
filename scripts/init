@@ -1,15 +1,5 @@
 #!/bin/bash
 
-# init - bootstrap dotfiles on a fresh macOS machine
-#
-# Usage:
-#   ./scripts/init
-#
-# This script:
-#   1. Installs Homebrew (if missing)
-#   2. Installs required dependencies via brew
-#   3. Runs make reload to symlink dotfiles
-
 set -e
 
 DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -17,23 +7,19 @@ DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 echo "Bootstrapping dotfiles..."
 echo ""
 
-# Install Homebrew
 if ! command -v brew &> /dev/null; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-  # Add brew to PATH for this script
   eval "$(/opt/homebrew/bin/brew shellenv)"
 else
   echo "Homebrew already installed"
 fi
 
-# Install dependencies
 echo ""
 echo "Installing dependencies..."
-brew install stow gh
+brew install stow gh max-sixty/worktrunk/wt
+wt config shell install
 
-# Run make reload
 echo ""
 echo "Symlinking dotfiles..."
 cd "$DOTFILES_DIR"

@@ -1,0 +1,7 @@
+# https://worktrunk.dev/
+
+worktree-path = "../{main-worktree}--{branch}"
+
+[hooks.post-create]
+composer = "[ -f composer.json ] && composer install --quiet || true"
+npm = "[ -f package.json ] && npm install --silent || true"

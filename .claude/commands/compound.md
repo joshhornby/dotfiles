@@ -1,12 +1,12 @@
 ---
-allowed-tools: Read(*), Write(*), Bash(git log:*), Bash(git diff:*)
+allowed-tools: Read(*), Write(*), Bash(git log:*), Bash(git diff:*), Bash(basename:*), Bash(pwd:*)
 description: Accumulate learnings and insights across multiple sessions into persistent knowledge
 ---
 
 ## Context
 
 - Current directory: !`pwd`
-- Project name: !`basename $(pwd)`
+- Project name: !`basename "$PWD"`
 - Recent commits: !`git log --oneline -10 2>/dev/null || echo "Not a git repo"`
 
 ## Task

@@ -79,7 +79,9 @@ tell application "iTerm"
     repeat with i from 1 to $AGENT_COUNT
       set newTab to (create tab with default profile)
       tell current session of newTab
-        write text "cd \"$PROJECT_ROOT/../${PROJECT_NAME}-agent-" & i & "\" && ([ -f composer.json ] && composer install || true) && ([ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use || true) && ([ -f package.json ] && npm i || true) && claude"
+        set agentNum to i
+        set basePort to 40000 + (agentNum * 10)
+        write text "cd \"$PROJECT_ROOT/../${PROJECT_NAME}-agent-" & agentNum & "\" && export COMPOSE_PROJECT_NAME=${PROJECT_NAME}-agent-" & agentNum & " && ([ ! -f .env ] && [ -f \"$PROJECT_ROOT/.env\" ] && cp \"$PROJECT_ROOT/.env\" .env || [ ! -f .env ] && [ -f .env.example ] && cp .env.example .env || true) && ([ -f .env ] && sed -i '' -e 's/^APP_PORT=.*/APP_PORT=" & basePort & "/' -e 's/^VITE_PORT=.*/VITE_PORT=" & (basePort + 1) & "/' -e 's/^FORWARD_DB_PORT=.*/FORWARD_DB_PORT=" & (basePort + 2) & "/' -e 's/^FORWARD_REDIS_PORT=.*/FORWARD_REDIS_PORT=" & (basePort + 3) & "/' -e 's/^FORWARD_MEILISEARCH_PORT=.*/FORWARD_MEILISEARCH_PORT=" & (basePort + 4) & "/' -e 's/^FORWARD_MAILPIT_PORT=.*/FORWARD_MAILPIT_PORT=" & (basePort + 5) & "/' .env || true) && ([ -f composer.json ] && composer install || true) && ([ -f .nvmrc ] && . ~/.nvm/nvm.sh && nvm use || true) && ([ -f package.json ] && npm i || true) && claude"
       end tell
     end repeat
 

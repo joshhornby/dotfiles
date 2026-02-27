@@ -1,6 +1,6 @@
 ---
 name: add-feature
-description: Interview the user deeply about a feature idea and generate a comprehensive PRD that an autonomous agent can use to implement it. Use when adding a new feature, capability, or system component to pg-loop. Triggers on "add feature", "new feature", "build this", "I want to add".
+description: Interview the user deeply about a feature idea and generate a comprehensive PRD that an autonomous agent can use to implement it. Use when adding a new feature, capability, or system component. Triggers on "add feature", "new feature", "build this", "I want to add".
 allowed-tools: Read, Glob, Grep, AskUserQuestion, Write, Edit
 argument-hint: [feature-idea]
 ---
@@ -15,12 +15,11 @@ The feature idea: `$ARGUMENTS`
 
 Before asking any questions, gather context on what exists now. Run these in parallel:
 
-- Read `CLAUDE.md` — current routing map and source layout
-- Read `docs/architecture/overview.md` — system architecture
-- Read `docs/architecture/data-model.md` — current data model
-- Read `docs/plans/v1-kickoff.md` — what we're building toward
-- Glob `src/**/*.ts` — all source files that exist
-- Read `src/db/schema.ts` — current schema
+- Read `CLAUDE.md` if it exists — project conventions and structure
+- Glob for architecture/design docs (e.g. `docs/**/*.md`, `docs/architecture/**`)
+- Glob for source files to understand the project layout (e.g. `src/**/*`, `lib/**/*`, `app/**/*`)
+- Read any schema or data model files you find
+- Look for existing PRDs or design docs to match the project's conventions
 
 This context informs which questions to ask and helps identify dependencies and conflicts with existing code.
 
@@ -47,7 +46,7 @@ Ask about:
 - **Inputs** — What data does this feature need? Where does it come from?
 - **Outputs** — What does this feature produce? Where does it go?
 - **Boundaries** — What is explicitly NOT part of this feature? What are we deferring?
-- **Interactions** — How does this feature interact with existing components (CLI, agents, database, tools)?
+- **Interactions** — How does this feature interact with existing components?
 
 ### Round 3: Edge Cases & Error Handling
 
@@ -64,16 +63,16 @@ Ask about:
 Ask about:
 
 - **New tables or columns** — Does this need new database schema? What fields?
-- **Relationships** — How does new data relate to existing tables (projects, etc.)?
+- **Relationships** — How does new data relate to existing data?
 - **Data lifecycle** — Is this data permanent? Should it be cleaned up? Versioned?
 - **Querying** — How will this data be retrieved? What queries need to be fast?
-- **Embeddings** — Does any of this data need semantic search via pgvector?
+- **Search** — Does any of this data need full-text or semantic search?
 
 ### Round 5: Technical Constraints & Preferences
 
 Ask about:
 
-- **Dependencies** — Does this need new npm packages? External APIs? Services?
+- **Dependencies** — Does this need new packages? External APIs? Services?
 - **Performance** — Are there latency or throughput requirements?
 - **Configuration** — Does this need new env vars or config?
 - **Testing** — What's the testing strategy? What must be verified?
@@ -83,7 +82,7 @@ Ask about:
 
 Ask about:
 
-- **CLI commands** — What new commands or flags are needed?
+- **User interface** — What new UI elements, commands, endpoints, or pages are needed?
 - **Output format** — What should the user see? Verbose or minimal? Structured or prose?
 - **Feedback** — How does the user know something is happening? Progress indicators?
 - **Errors to users** — What error messages should the user see?
@@ -103,7 +102,7 @@ Based on everything learned so far, ask follow-up questions about:
 
 ## Phase 3: Generate the PRD
 
-After the interview is complete, generate a comprehensive PRD. Write it to `docs/designs/prd-[feature-name].md` using a slugified version of the feature name.
+After the interview is complete, generate a comprehensive PRD. Write it to `docs/prd-[feature-name].md` (or the project's existing design docs directory if one was found in Phase 1) using a slugified version of the feature name.
 
 ### PRD Structure
 
@@ -198,13 +197,9 @@ After the interview is complete, generate a comprehensive PRD. Write it to `docs
 
 ## Interface Design
 
-### CLI Commands
+### User-Facing Changes
 
-[New commands, flags, arguments, and expected output]
-
-### Agent Integration
-
-[How agents interact with this feature]
+[New commands, endpoints, UI elements, or pages and their expected behavior]
 
 ## Testing Strategy
 

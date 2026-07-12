@@ -226,7 +226,13 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 > Not performative updates — but real transparency
 > X is more than just Y. It's Z.
 
-**Detection:** Search the text for "just" and "not" — most instances of this pattern contain one of them. Also scan for em-dash and semicolon pivots ("—it's", "; it's").
+**Detection (mandatory — do not eyeball this one):** Negation hides in fluent prose and survives a read-through, so run a `Grep` sweep instead of scanning by eye. "just"/"not" alone is not enough — the pivot is just as often `isn't`, `don't`, `doesn't`, `not from`, `rather than`, or a bare punctuation turn into "it's". Run:
+
+```
+grep -niE "not (just|only|merely|simply|about|from|a )|isn'?t|aren'?t|wasn'?t|weren'?t|don'?t|doesn'?t|didn'?t|won'?t|can'?t|cannot|more than just|rather than|instead of|but rather|;[[:space:]]*it'?s|[—-][[:space:]]*it'?s|\. It'?s" <file>
+```
+
+Every hit is a **candidate**, not an automatic fix — a plain factual negative ("the API doesn't support batching") is fine. Judge each: is it a negated setup pivoting to an affirmative? If so, rewrite. Re-run the sweep after editing and confirm zero unresolved pivots before declaring the pass done.
 
 **Fix:** State the affirmative directly and drop the negated setup. If the contrast is genuinely doing work, replace the abstract pivot with a specific detail or example.
 
@@ -505,15 +511,17 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 ## Process
 
 1. Read the input text carefully
-2. Identify all instances of the patterns above
-3. Rewrite each problematic section
-4. Ensure the revised text:
+2. Work through the Pattern Index (§1–28), identifying every instance
+3. **Run the negation sweep (§9) with `Grep`** — do not rely on the read-through. This is the tell most likely to survive a fluent draft, and skipping it is why a pass looks "light" but leaves "not X, but Y" constructions behind. Do this even when the text already looks clean.
+4. Rewrite each problematic section
+5. **Re-run the negation sweep** on the edited text and resolve any remaining pivots before finishing
+6. Ensure the revised text:
     - Sounds natural when read aloud
     - Varies sentence structure naturally
     - Uses specific details over vague claims
     - Maintains appropriate tone for context
     - Uses simple constructions (is/are/has) where appropriate
-5. Present the humanized version
+7. Present the humanized version
 
 ## Output Format
 

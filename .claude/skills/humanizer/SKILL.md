@@ -1,7 +1,7 @@
 ---
 name: humanizer
-version: 2.1.1
-description: "Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia's comprehensive 'Signs of AI writing' guide. Detects and fixes patterns including: inflated symbolism, promotional language, superficial -ing analyses, vague attributions, em dash overuse, rule of three, AI vocabulary words, negative parallelisms, and excessive conjunctive phrases."
+version: 2.2.0
+description: "Remove signs of AI-generated writing from text. Use when editing or reviewing text to make it sound more natural and human-written. Based on Wikipedia's comprehensive 'Signs of AI writing' guide plus Blake Stockton's AI-writing breakdowns. Detects and fixes patterns including: inflated symbolism, promotional language, superficial -ing analyses, vague attributions, em dash overuse, rule of three, AI vocabulary words, negative parallelisms, excessive conjunctive phrases, editorialising, vague change intros, and business-hype/templated phrases."
 allowed-tools:
   - Read
   - Write
@@ -24,6 +24,43 @@ When given text to humanize:
 3. **Preserve meaning** - Keep the core message intact
 4. **Maintain voice** - Match the intended tone (formal, casual, technical, etc.)
 5. **Add soul** - Don't just remove bad patterns; inject actual personality
+
+---
+
+## Pattern Index
+
+Run a systematic pass over the text, checking each pattern below. Jump to the numbered section for words-to-watch and before/after examples.
+
+| # | Pattern | Quick tell |
+|---|---------|-----------|
+| 1 | Undue emphasis on significance/legacy | "is a testament", "pivotal moment", "evolving landscape" |
+| 2 | Undue emphasis on notability/media | source lists, "active social media presence" |
+| 3 | Superficial -ing analyses | trailing "highlighting…", "reflecting…", "ensuring…" |
+| 4 | Promotional / advertisement language | "nestled", "breathtaking", "rich cultural heritage" |
+| 5 | Vague attributions / weasel words | "experts argue", "observers have cited" |
+| 6 | Outline-like "Challenges/Future" sections | "Despite its… faces several challenges" |
+| 7 | Overused AI vocabulary words | "delve", "tapestry", "underscore", "intricate" |
+| 8 | Copula avoidance (dodging is/are) | "serves as", "boasts", "features" for plain "is/has" |
+| 9 | Negative parallelisms (negation) | "not just X, it's Y" — search "just"/"not" |
+| 10 | Rule of three overuse | forced groups of three nouns/clauses |
+| 11 | Elegant variation (synonym cycling) | same subject renamed each sentence |
+| 12 | False ranges | "from X to Y" where X/Y share no scale |
+| 13 | Em dash overuse | — used where a comma/parenthesis fits |
+| 14 | Overuse of boldface | mechanical **bolding** of terms |
+| 15 | Inline-header vertical lists | "**Term:** sentence" bullets |
+| 16 | Title Case in headings | "## All Main Words Capitalised" |
+| 17 | Emojis | decorative 🚀/✅ on headings/bullets |
+| 18 | Curly quotation marks | " " instead of " " |
+| 19 | Collaborative comms artifacts | "I hope this helps", "Certainly!" |
+| 20 | Knowledge-cutoff disclaimers | "as of [date]", "based on available information" |
+| 21 | Sycophantic / servile tone | "Great question!", "You're absolutely right!" |
+| 22 | Filler phrases | "in order to", "at this point in time" |
+| 23 | Excessive hedging | stacked "could possibly might" |
+| 24 | Generic positive conclusions | "exciting times lie ahead" |
+| 25 | Vague change intros | "In today's fast-paced landscape…" |
+| 26 | Editorialising | "it's important to note", "notably" |
+| 27 | Overused conjunctive phrases | "Moreover", "Furthermore", "However" |
+| 28 | Business hype / templated phrases | "game-changer", "unlock the power of", "Let's face it" |
 
 ---
 
@@ -177,15 +214,27 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 ---
 
-### 9. Negative Parallelisms
+### 9. Negative Parallelisms (Negation)
 
-**Problem:** Constructions like "Not only...but..." or "It's not just about..., it's..." are overused.
+**Problem:** Constructions that set up a negative and then pivot to an affirmative — "Not only...but...", "It's not just X, it's Y", "X isn't A; it's B" — are one of the most prominent AI tells. They fake depth by dressing a plain claim as a revelation.
+
+**Variants to watch:**
+> It's not just X, it's Y
+> We're not just building a product, we're creating an experience
+> AI doesn't eliminate labor; it redistributes it
+> This isn't a retreat from technology; it's an evolution enabled by it
+> Not performative updates — but real transparency
+> X is more than just Y. It's Z.
+
+**Detection:** Search the text for "just" and "not" — most instances of this pattern contain one of them. Also scan for em-dash and semicolon pivots ("—it's", "; it's").
+
+**Fix:** State the affirmative directly and drop the negated setup. If the contrast is genuinely doing work, replace the abstract pivot with a specific detail or example.
 
 **Before:**
-> It's not just about the beat riding under the vocals; it's part of the aggression and atmosphere. It's not merely a song, it's a statement.
+> It's not just about the beat riding under the vocals; it's part of the aggression and atmosphere. It's not merely a song, it's a statement. AI doesn't eliminate labor; it redistributes it.
 
 **After:**
-> The heavy beat adds to the aggressive tone.
+> The heavy beat adds to the aggressive tone. AI shifts work rather than removing it — junior analysts now spend their time checking model output instead of writing first drafts.
 
 ---
 
@@ -383,6 +432,76 @@ Avoiding AI patterns is only half the job. Sterile, voiceless writing is just as
 
 ---
 
+## ADDITIONAL PATTERNS
+
+### 25. Vague Change Intros
+
+**Problem:** LLMs open with a sweeping, content-free statement about change or the state of the world, usually following the formula "As [broad trend] continues to [vague verb], [audience] must [generic goal]."
+
+**Phrases to watch:** In today's fast-paced/competitive [world/landscape/business environment], As the digital landscape continues to evolve, With the rise of artificial intelligence, In an increasingly fast-paced world, As organizations adapt to changing demands, As industries undergo digital transformation, In a world driven by automation and analytics, As the future of work continues to take shape
+
+**Fix:** Cut the preamble and open on a concrete fact, number, or specific stake. Write the intro last, after the body, so it can be grounded in something real.
+
+**Before:**
+> In today's fast-paced business landscape, efficiency is more important than ever.
+
+**After:**
+> Last quarter, 47% of teams missed deadlines because of slow handoffs. Here's what fixed it.
+
+---
+
+### 26. Editorialising
+
+**Problem:** AI inserts commentary telling the reader that something matters or how to read it, instead of just stating the fact.
+
+**Phrases to watch:** it's important to note, it is worth noting, it's worth mentioning, no discussion would be complete without, it should be emphasized that, notably
+
+**Before:**
+> It's important to note that the museum, notably, holds over 2,000 works.
+
+**After:**
+> The museum holds over 2,000 works.
+
+---
+
+### 27. Overused Conjunctive Phrases
+
+**Problem:** AI leans on heavy transition words to fake logical flow, far more often than human writers.
+
+**Words to watch:** Moreover, Furthermore, Additionally, However, On the other hand, In contrast, Consequently, Nevertheless
+
+**Fix:** Most can be deleted outright — the logical relationship usually survives without them. Where a genuine contrast or addition needs signalling, prefer a plain "But", "And", or "So", or just start a new sentence.
+
+**Before:**
+> The design is minimal. Moreover, it is fast. Furthermore, it is cheap. However, it lacks features.
+
+**After:**
+> The design is minimal, fast, and cheap. It lacks features.
+
+---
+
+### 28. Business Hype and Templated Phrases
+
+**Problem:** AI reaches for marketing-deck clichés — hype verbs, forced conversational hooks, and fill-in-the-blank templates — whether or not the writing is actually an advert.
+
+**Templated intros & transitions:** In a world where..., Now more than ever, Let's dive in, Let's break it down, Here's the thing, Here's the uncomfortable truth, The goal?, The result?
+
+**Business hype:** Forward-thinking companies, Revolutionizing the way, A game-changer for..., That's where [X] comes in, Unlock the power of..., Supercharge your..., Future-proof your..., Stay ahead of the curve, Strategic advantage, The bottom line, Imagine a world where...
+
+**Forced conversational tone:** Let's face it, But let's get real, What does this mean for you?, Not all [X] are created equal, It's no secret that..., The good news?
+
+**Overused templates:** "[Problem]? Meet [solution].", It's time to..., "Do X, so you can Y", "[X] is more than just [Y]. It's [Z]."
+
+**Fix:** Delete the hook and state the point. Replace hype verbs ("supercharge", "revolutionize", "unlock") with the plain verb for what actually happens. The "[X] is more than just [Y], it's [Z]" template is negative parallelism (#9) in disguise — kill it the same way.
+
+**Before:**
+> Let's face it: in a world where every second counts, our platform is a game-changer that supercharges your workflow. It's not just a tool—it's a strategic advantage.
+
+**After:**
+> The platform batches your exports, so a report that took 20 minutes now takes two.
+
+---
+
 ## Process
 
 1. Read the input text carefully
@@ -427,5 +546,11 @@ Provide:
 ## Reference
 
 This skill is based on [Wikipedia:Signs of AI writing](https://en.wikipedia.org/wiki/Wikipedia:Signs_of_AI_writing), maintained by WikiProject AI Cleanup. The patterns documented there come from observations of thousands of instances of AI-generated text on Wikipedia.
+
+Sections 25–28 and the expanded negation guidance (§9) draw on Blake Stockton's AI-writing breakdowns:
+- [Negation / negative parallelism](https://www.blakestockton.com/dont-write-like-ai-1-101-negation/)
+- [Takeaways from Wikipedia's Signs of AI writing](https://www.blakestockton.com/takeaways-from-wikipedias-signs-of-ai-writing-2/)
+- [Vague change intros](https://www.blakestockton.com/vague-change-intros/)
+- [Red flag phrases](https://www.blakestockton.com/red-flag-phrases/)
 
 Key insight from Wikipedia: "LLMs use statistical algorithms to guess what should come next. The result tends toward the most statistically likely result that applies to the widest variety of cases."

@@ -61,6 +61,7 @@ Run a systematic pass over the text, checking each pattern below. Jump to the nu
 | 26 | Editorialising | "it's important to note", "notably" |
 | 27 | Overused conjunctive phrases | "Moreover", "Furthermore", "However" |
 | 28 | Business hype / templated phrases | "game-changer", "unlock the power of", "Let's face it" |
+| 29 | Aphoristic closers (parallelism for effect) | "X is the Y; the A is the B" quotable maxims |
 
 ---
 
@@ -508,10 +509,33 @@ Every hit is a **candidate**, not an automatic fix — a plain factual negative 
 
 ---
 
+### 29. Aphoristic Closers (Parallelism for Effect)
+
+**Problem:** LLMs like to cap a section or paragraph with a short, quotable maxim built on parallel or antithetical structure. It sounds profound while only restating what the surrounding text already said. This is the "punchy" blog-and-keynote reflex, and it reads as manufactured wisdom. It overlaps with negative parallelism (#9), but the tell here is a standalone closer whose whole job is to sound quotable.
+
+**Forms to watch:**
+> X is the Y; the A is the B. ("`/goal` is the endurance; the skill is the work.")
+> X is Y, not Z. (as a standalone closing line: "This is engineering, not magic.")
+> We don't X to Y; we Y to X. (chiasmus / antithesis)
+> The X isn't the point; the Y is.
+> Any one-line sentence whose job is to sound quotable rather than to inform.
+
+**Detection:** Read the last sentence of each section and paragraph. If it is short, symmetrical (two clauses balanced around a semicolon, comma, or full stop), and could be lifted onto a slide without the surrounding text, it is a candidate. Also flag standalone one-liners that restate the preceding point with rhythm.
+
+**Fix:** Delete it. The point was already made in plain prose above it. If the line carries real information, fold that into the preceding sentence and drop the parallel framing.
+
+**Before:**
+> Reach for `/goal` only for long, unattended runs. `/goal` is the endurance; the skill is the work.
+
+**After:**
+> Reach for `/goal` only for long, unattended runs.
+
+---
+
 ## Process
 
 1. Read the input text carefully
-2. Work through the Pattern Index (§1–28), identifying every instance
+2. Work through the Pattern Index (§1–29), identifying every instance
 3. **Run the negation sweep (§9) with `Grep`** — do not rely on the read-through. This is the tell most likely to survive a fluent draft, and skipping it is why a pass looks "light" but leaves "not X, but Y" constructions behind. Do this even when the text already looks clean.
 4. Rewrite each problematic section
 5. **Re-run the negation sweep** on the edited text and resolve any remaining pivots before finishing

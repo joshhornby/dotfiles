@@ -38,9 +38,10 @@ by stow. Team skills come from the separate `journey-engineering` plugin.
 spelling, pinned dependency versions, no-attribution commits, and behaviour-over-mocks
 testing. Project-specific conventions belong in that project's own `CLAUDE.md`, not here.
 
-`.claude/hooks/check-house-rules.py` is a warn-only PostToolUse hook that flags `any`
-in code and American spellings in prose after each edit. It never blocks — see the header
-comment for how to make it blocking once trusted.
+`.claude/hooks/humanize.py` is the only hook. It runs on PreToolUse and denies the call
+when the text about to be written reads as AI output. It reads markdown, code comments,
+git commit and `gh` message text, and MCP text fields. It also blocks the `any` type in
+new TypeScript. Mark a line `// any: <reason>` when no real type exists.
 
 #### Commands
 

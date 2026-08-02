@@ -14,17 +14,6 @@
           }
         ]
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "python3 \"$HOME/.claude/hooks/check-house-rules.py\""
-          }
-        ]
-      }
     ]
   },
   "enabledPlugins": {
@@ -44,8 +33,5 @@
   "skipWorkflowUsageWarning": true,
   "preferredNotifChannel": "iterm2",
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": false,
-  "feedbackSurveyState": {
-    "lastShownTime": 1754072468382
-  }
+  "voiceEnabled": false
 }

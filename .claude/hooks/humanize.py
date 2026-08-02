@@ -14,6 +14,10 @@ Where it looks:
 
 Inline code spans are always removed first, so a name such as the CSS colour property
 does not trip the spelling check.
+
+It also blocks the `any` type in new TypeScript. That rule reads the code itself, not
+the comments. A line marked `// any: <reason>` passes, so an unavoidable `any` cannot
+block every write.
 """
 import json
 import re
@@ -96,6 +100,11 @@ MD_EXT = {".md", ".markdown", ".mdx", ".txt"}
 HASH_EXT = {".py", ".sh", ".bash", ".zsh", ".rb", ".yaml", ".yml", ".toml"}
 C_EXT = {".js", ".ts", ".jsx", ".tsx", ".c", ".cc", ".cpp", ".h", ".hpp", ".java",
          ".go", ".rs", ".css", ".scss", ".swift", ".kt", ".php"}
+
+TS_EXT = {".ts", ".tsx", ".mts", ".cts"}
+ANY_RE = re.compile(r":\s*any\b|\bas\s+any\b|\bany\[\]|<any>|Array<any>")
+# escape hatch, so a type that cannot be known does not deny every write
+ANY_OK = re.compile(r"//\s*any:")
 
 
 def strip_code(text):
@@ -198,14 +207,38 @@ def extract(tool, tool_input):
     if tool == "Bash":
         command = tool_input.get("command", "")
         return "\n".join(p for p in (strip_code(bash_text(command)), heredoc_writes(command)) if p)
+    return checked(tool_input.get("file_path", ""), written(tool_input))
+
+
+def written(tool_input):
+    """Return the text a file-writing tool puts into the file."""
     chunks = [tool_input.get("content", ""), tool_input.get("new_string", "")]
     chunks += [e.get("new_string", "") for e in tool_input.get("edits", []) if isinstance(e, dict)]
-    return checked(tool_input.get("file_path", ""), "\n".join(c for c in chunks if c))
+    return "\n".join(c for c in chunks if c)
+
+
+def any_uses(tool_input):
+    """Return a note when the new TypeScript declares the any type."""
+    path = tool_input.get("file_path", "")
+    if Path(path).suffix.lower() not in TS_EXT or path.endswith(".d.ts"):
+        return []
+    hits = []
+    for line in written(tool_input).splitlines():
+        stripped = line.strip()
+        if stripped.startswith(("//", "*")) or ANY_OK.search(line):
+            continue
+        if ANY_RE.search(line):
+            hits.append(stripped[:60])
+    if not hits:
+        return []
+    more = f" and {len(hits) - 1} more" if len(hits) > 1 else ""
+    return [f"`any` type in '{hits[0]}'{more}"]
 
 
 try:
     data = json.load(sys.stdin)
-    text = extract(data.get("tool_name", ""), data.get("tool_input") or {})
+    tool_input = data.get("tool_input") or {}
+    text = extract(data.get("tool_name", ""), tool_input)
 except Exception:
     sys.exit(0)
 
@@ -217,11 +250,16 @@ notes += [f"'{w}' -> '{SPELLING[w]}'"
 notes += [note for pat, note in PHRASES if re.search(rf"\b(?:{pat})\b", text, re.IGNORECASE)]
 counts = Counter(m.group(1).lower() for m in OFTEN_RE.finditer(text))
 notes += [f"'{w}' used {n} times, vary it" for w, n in counts.items() if n >= LIMIT]
+code_notes = any_uses(tool_input)
+notes += code_notes
 
 if notes:
-    reason = ("humanize: " + ", ".join(notes)
-              + ". Rewrite the text and call the tool again. Applies to markdown, "
+    reason = ("house rules: " + ", ".join(notes)
+              + ". Fix these and call the tool again. The prose checks read markdown, "
                 "code comments, and message text.")
+    if code_notes:
+        reason += (" Find the real type. Mark the line `// any: <reason>` only when no "
+                   "real type exists.")
     print(json.dumps({"hookSpecificOutput": {
         "hookEventName": "PreToolUse",
         "permissionDecision": "deny",

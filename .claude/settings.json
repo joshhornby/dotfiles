@@ -25,13 +25,8 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
   "tui": "fullscreen",
-  "voice": {
-    "enabled": false,
-    "mode": "hold"
-  },
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "preferredNotifChannel": "iterm2",
-  "skipAutoPermissionPrompt": true,
-  "voiceEnabled": false
+  "skipAutoPermissionPrompt": true
 }

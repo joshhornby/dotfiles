@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""PreToolUse hook: deny a tool call when the text it writes reads as AI output.
+"""PreToolUse hook: deny a tool call that breaks a house rule.
+
+The main rule is prose. It denies a call when the text it writes reads as AI output.
 
 Adapted from fcakyon/claude-codex-settings plugins/humanize. Changes for this setup:
 British spellings added to the word list, an American spelling check added, and the

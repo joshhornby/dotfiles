@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$HOME/.claude/hooks/humanize.py\""
+            "command": "python3 \"$HOME/.claude/hooks/house-rules.py\""
           }
         ]
       }

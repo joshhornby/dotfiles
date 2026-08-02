@@ -22,11 +22,9 @@ Josh's name.
 - Use one object parameter for a function with two or more arguments.
 - Use British spelling in identifiers and strings. Keep platform API names as
   specified (CSS `color`).
-- Pin dependency versions exactly. Do not use ranges.
 
 ## Commits
 
-- Do not add Claude attribution unless asked.
 - Make a new commit. Do not amend unless told to.
 - Use conventional prefixes: `feat`, `fix`, `chore`, `refactor`, `docs`.
 

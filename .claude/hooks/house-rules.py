@@ -44,7 +44,8 @@ SWAP = {
     "encompassing": "covering", "facilitating": "helping", "emphasizing": "showing",
     "embodying": "showing", "underlies": "drives", "enduring": "lasting",
     "nestled": "in", "vibrant": "lively", "game-changing": "big",
-    "cutting-edge": "latest", "albeit": "though",
+    "cutting-edge": "latest", "albeit": "though", "genuinely": "drop it",
+    "honestly": "drop it", "reframes": "changes",
 }
 
 # blocked cliches and filler openers, each mapped to a short fix note
@@ -58,6 +59,18 @@ PHRASES = [
     (r"in summary", "drop it"),
     (r"to sum up", "drop it"),
     (r"plays? a \w+ role in shaping", "say what it does"),
+    (r"load[- ]bearing (?:facts?|claims?|details?|words?|sentences?|parts?)", "say what it holds up"),
+    (r"honest truth", "drop 'honest'"),
+    (r"(?:one|a) honest caveat", "state the caveat"),
+    (r"the \w+ that (?:reframes|changes) everything", "say what it changes"),
+    (r"practical read", "give the point"),
+    (r"the \w+ is bigger than the (?:effects?|numbers?|signals?)", "drop the metaphor"),
+    (r"it works because it keeps \w+ing", "say what it does"),
+    (r"(?:is|are) not what you (?:think|expect)", "state the point"),
+    (r"the thing that made me \w+", "state the point"),
+    (r"(?:my|the) favou?rite (?:paragraph|part|line|section|bit|sentence)", "say why it works"),
+    (r"the part I(?:['’]d| would) \w+", "say what to change"),
+    (r"even further", "drop 'even'"),
 ]
 
 # fine once, suspect when repeated, flagged at LIMIT or more
@@ -74,7 +87,8 @@ SPELLING = {
     "analyzed": "analysed", "initialize": "initialise", "initialized": "initialised",
     "customize": "customise", "summarize": "summarise", "prioritize": "prioritise",
     "canceled": "cancelled", "catalog": "catalogue", "defense": "defence",
-    "fulfill": "fulfil", "traveled": "travelled",
+    "fulfill": "fulfil", "traveled": "travelled", "favorite": "favourite",
+    "favorites": "favourites",
 }
 
 MARKS = {"—": "em-dash, use a comma or a full stop", "§": "section sign",

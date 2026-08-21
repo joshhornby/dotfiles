@@ -1,22 +1,186 @@
 ---
 name: typescript-strict
-description: TypeScript strict mode patterns including schema-first development, branded types, type vs interface guidance, and tsconfig strict flags. Use when writing TypeScript code, defining types or schemas, or reviewing type safety.
+description: Strict TypeScript. Model state as discriminated unions so invalid states can't be constructed, then hold the line with branded types, schema-first trust boundaries and strict compiler flags. Use when defining types or schemas, when you see booleans or optionals that only make sense in certain combinations, when writing defensive "shouldn't happen" checks, when configuring tsconfig, or when reviewing type safety.
 ---
 
-# TypeScript Strict Mode
+# Strict TypeScript
 
-## Core Rules
+Two halves, in order of payoff. First design types so invalid states cannot be
+written down. Then use the compiler, branded types and boundary schemas to keep raw
+values out.
 
-1. **No `any`** - ever. Use `unknown` if type is truly unknown
-2. **No type assertions** (`as Type`) without justification
-3. **Prefer `type` over `interface`** for data structures
-4. **Reserve `interface`** for behavior contracts only
+## Core rules
+
+1. **No `any`.** Find the real type. Use `unknown` at untrusted boundaries. Contain
+   unavoidable interop in a declaration file or a named shim, and explain it there.
+2. **No type assertions** (`as Type`) without justification. The justified places
+   are named below and nowhere else.
+3. **Model state as a discriminated union**, not a bag of booleans and optionals.
+4. **Follow the repository's `type` or `interface` convention.** Choose from
+   language semantics when no convention exists.
+5. **Validate at trust boundaries. Trust inward.**
 
 ---
 
-## Type vs Interface
+## Making impossible states impossible
 
-### `type` — for data structures
+Most bugs are not exotic edge cases. They are "shouldn't be possible, but the code
+allowed it". Design the type so the invalid state has no spelling, and the compiler
+becomes the safety net.
+
+When a set of fields is only valid in certain combinations, they belong in one
+tagged union.
+
+```typescript
+// Representable but invalid: { isLoggedIn: false, username: 'alice' }
+type UserSession = {
+  isLoggedIn: boolean;
+  username?: string;
+};
+
+// Each variant carries exactly the data that state needs, and nothing more
+type UserSession =
+  | { status: 'loggedOut' }
+  | { status: 'loggedIn'; username: string };
+```
+
+The payoff scales with how many invalid combinations you delete. A booking with four
+status booleans and three optional payload fields has over a hundred representable
+shapes and four real states.
+
+```typescript
+type Booking =
+  | { status: 'enquiry'; guest: EmailAddress }
+  | { status: 'held'; guest: EmailAddress; holdExpiresAt: Date }
+  | { status: 'confirmed'; guest: EmailAddress; reference: BookingReference; total: Money }
+  | { status: 'cancelled'; guest: EmailAddress; reason: CancellationReason };
+```
+
+`holdExpiresAt` cannot be read on a confirmed booking. `reference` cannot be absent
+on one. No guard is needed for either, because neither can be written.
+
+### Exhaustiveness: let the compiler find every affected spot
+
+Switch on the tag and assign the default to `never`. Add a variant later and every
+unhandled `switch` becomes a compile error. Refactor by following the red.
+
+```typescript
+function describe(booking: Booking): string {
+  switch (booking.status) {
+    case 'enquiry':   return 'Awaiting availability';
+    case 'held':      return `Held until ${booking.holdExpiresAt.toISOString()}`;
+    case 'confirmed': return `Confirmed as ${booking.reference}`;
+    case 'cancelled': return `Cancelled: ${booking.reason}`;
+    default: {
+      const unhandled: never = booking; // compile error if a case is missing
+      return unhandled;
+    }
+  }
+}
+```
+
+### Smells that signal a missing union
+
+- Multiple booleans that cannot all be true at once, such as `isLoading`,
+  `isError` and `isSuccess`.
+- An optional field that is only meaningful when another field holds a specific value.
+- A defensive `if` or `throw` for a case commented "this should never happen".
+- A field you must null-check on every read because it is sometimes absent.
+
+### When a union is not the answer
+
+The payoff is proportional to the number of invalid combinations removed. When that
+number is zero, a union adds ceremony and nothing else. Keep separate optional
+fields for:
+
+- Independent optionals, such as a draft form or a `PATCH` payload where any field
+  can be absent on its own.
+- An options bag or a config file.
+- Fields that are always present together and never read apart. One optional nested
+  object is clearer than two variants.
+- A wire shape you do not own. See below.
+
+### Who owns the union
+
+Your union is a domain type, not a copy of someone else's payload. A supplier API
+that returns `{ status, error?, data? }` keeps that shape at the edge. Parse it once
+into your own union at the boundary, then pass the refined type inward.
+
+Define a union once per owned contract, version and bounded context. Do not couple
+two independently deployed consumers because their variants happen to match today.
+Translate at each boundary, and use contract tests where drift would hurt.
+
+### Where runtime checks are allowed to live
+
+Exactly two places:
+
+- **The trust boundary**, where a schema or a smart constructor rejects bad input.
+- **The `never` default**, which is unreachable but still has to return.
+
+Inward of those, a check for an impossible state means the type is still wrong. Fix
+the type instead of adding the guard.
+
+---
+
+## Branded types and constrained primitives
+
+When only some strings or numbers are valid, brand the primitive and give it one
+validating constructor. This is the one place a type assertion is justified.
+
+```typescript
+type UserId = string & { readonly brand: unique symbol };
+type PaymentMinorUnits = number & { readonly brand: unique symbol };
+type Currency = 'GBP' | 'USD' | 'EUR';
+type PaymentMoney = {
+  readonly minorUnits: PaymentMinorUnits;
+  readonly currency: Currency;
+};
+
+const processPayment = (userId: UserId, amount: PaymentMoney) => {
+  // Implementation
+};
+
+// Cannot pass a raw string or number
+processPayment('user-123', 100); // Error
+
+const toUserId = (raw: string): UserId => {
+  if (raw.length === 0) throw new Error('UserId cannot be empty');
+  return raw as UserId;
+};
+
+const toPaymentMinorUnits = (raw: number): PaymentMinorUnits => {
+  if (!Number.isSafeInteger(raw) || raw <= 0) {
+    throw new Error('Payment minor units must be a positive safe integer');
+  }
+  return raw as PaymentMinorUnits;
+};
+
+const toPaymentMoney = (minorUnits: number, currency: Currency): PaymentMoney => ({
+  minorUnits: toPaymentMinorUnits(minorUnits),
+  currency,
+});
+
+processPayment(toUserId('user-123'), toPaymentMoney(2_500, 'GBP')); // £25.00
+```
+
+Never scatter `as UserId` through application code. The assertion lives only inside
+the constructor, or in a schema's `transform`, so every branded value has passed
+validation.
+
+The payment boundary above takes already-rounded integer minor units, so `NaN`,
+infinities and binary-float fractions are rejected. A boundary that instead takes
+decimal major-unit text must parse with the currency's minor-unit exponent and a
+named rounding policy, or reject the excess precision. Never use
+`Math.round(rawNumber * 100)`.
+
+Non-empty collections follow the same principle. If empty is invalid, model it as
+`type NonEmptyArray<T> = [T, ...T[]]` rather than checking `.length` at every use.
+
+---
+
+## Type or interface
+
+### Use `type` for unions, tuples, mapped types and closed aliases
 
 ```typescript
 export type User = {
@@ -27,41 +191,77 @@ export type User = {
 };
 ```
 
-**Why `type`?** Better for unions, intersections, mapped types. `readonly` signals immutability. More flexible composition with utility types.
+Type aliases can name unions, intersections, tuples, primitives, mapped types and
+object shapes. They cannot be reopened by declaration merging. A discriminated union
+needs a `type`.
 
-### `interface` — for behavior contracts
+### Use `interface` for extendable object contracts
 
 ```typescript
-export interface UserRepository {
-  findById(id: string): Promise<User | undefined>;
-  save(user: User): Promise<void>;
+export interface BookingRepository {
+  findById(id: BookingId): Promise<Booking | undefined>;
+  save(booking: Booking): Promise<void>;
 }
 ```
 
-**Why `interface`?** Signals "this must be implemented." Works with `implements` keyword. Conventional for dependency injection.
-
-### Schema Duplication
-
-Define schemas once, import everywhere. Never duplicate the same validation logic across multiple files.
-
-```typescript
-// ✅ Define once
-export const CreateUserRequestSchema = z.object({
-  email: z.email(),
-  name: z.string().min(1),
-});
-export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
-
-// Import and use wherever needed
-```
-
-**Where schemas belong**: validate at trust boundaries (HTTP handlers, queue consumers, file/env parsing, third-party API responses), then pass plain derived types through internal logic — internal functions trust their inputs. Prefer schema libraries implementing [Standard Schema](https://standardschema.dev) (Zod 4+, Valibot, ArkType) so validation tooling stays interchangeable.
+Interfaces describe object shapes, work with `implements`, extend with conflict
+checking and support declaration merging. They suit behaviour contracts and
+deliberate extension points. They are not forbidden for data shapes.
 
 ---
 
-## Strict Mode Configuration
+## Schema-first at trust boundaries
 
-### tsconfig.json Settings
+### When a runtime schema is required
+
+A runtime schema is required when untrusted data crosses a boundary and the
+programme must check its shape or constraints before use:
+
+- HTTP, queue, file, environment or third-party data entering the system.
+- A data contract exchanged between independently deployed systems.
+- Contract-shaped test fixtures, where reusing a production schema adds evidence.
+
+```typescript
+const BookingResponseSchema = z.object({
+  id: z.uuid(),
+  guest: z.email(),
+});
+type BookingResponse = z.infer<typeof BookingResponseSchema>;
+
+const response = BookingResponseSchema.parse(apiResponse);
+```
+
+Internal invariants do not need a schema by default. A smart constructor, branded
+type or domain union is the clearer owner when values are created and consumed
+inside one trusted process.
+
+### When a schema is not required
+
+- Pure internal types, such as utilities and state.
+- `Result` and `Option` types. There is nothing to validate.
+- TypeScript utility types such as `Partial<T>` and `Pick<T>`.
+- Behaviour contracts. Interfaces are structural, not validated.
+- Component props, unless they come from a URL or an API.
+
+```typescript
+// A discriminated union, not a validated shape. See "impossible states" above.
+type Result<T, E> =
+  | { success: true; data: T }
+  | { success: false; error: E };
+```
+
+### Schema ownership
+
+Define a schema once per owned contract, version and bounded context, then import it
+within that boundary. Do not couple independently deployed consumers because their
+fields match today. Validate and translate at each trust boundary.
+
+Prefer libraries implementing [Standard Schema](https://standardschema.dev), such as
+Zod 4+, Valibot and ArkType, so validation tooling stays interchangeable.
+
+---
+
+## Strict mode configuration
 
 ```json
 {
@@ -82,131 +282,69 @@ export type CreateUserRequest = z.infer<typeof CreateUserRequestSchema>;
 }
 ```
 
-### What Each Setting Does
+**Strict baseline:**
 
-**Core strict flags:**
-- **`strict: true`** - Enables all strict type checking options
-- **`noImplicitAny`** - Error on expressions/declarations with implied `any` type
-- **`strictNullChecks`** - `null` and `undefined` have their own types (not assignable to everything)
-- **`noUnusedLocals`** - Error on unused local variables
-- **`noUnusedParameters`** - Error on unused function parameters
-- **`noImplicitReturns`** - Error when not all code paths return a value
-- **`noFallthroughCasesInSwitch`** - Error on fallthrough cases in switch statements
+- **`strict: true`** enables the strict type-checking family, including
+  `noImplicitAny` and `strictNullChecks`.
 
-**Additional safety flags (CRITICAL):**
-- **`noUncheckedIndexedAccess`** - Array/object access returns `T | undefined` (prevents runtime errors from assuming elements exist)
-- **`exactOptionalPropertyTypes`** - Distinguishes `property?: T` from `property: T | undefined` (more precise types)
-- **`noPropertyAccessFromIndexSignature`** - Requires bracket notation for index signature properties (forces awareness of dynamic access)
-- **`forceConsistentCasingInFileNames`** - Prevents case sensitivity issues across operating systems
-- **`allowUnusedLabels`** - Error on unused labels (catches accidental labels that do nothing)
+**Further project checks:**
 
-### Additional Rules
+- **`noUnusedLocals`** errors on an unused local variable.
+- **`noUnusedParameters`** errors on an unused function parameter.
+- **`noImplicitReturns`** errors when not all code paths return a value.
+- **`noFallthroughCasesInSwitch`** errors on a fallthrough case.
 
-- **No `@ts-ignore`** without explicit comments explaining why
-- **These rules apply to test code as well as production code**
+**Further safety flags to assess against the codebase:**
 
-### Architectural Insight: noUnusedParameters Catches Design Issues
+- **`noUncheckedIndexedAccess`** makes array and object access return
+  `T | undefined`, which stops code assuming an element exists.
+- **`exactOptionalPropertyTypes`** separates `property?: T` from
+  `property: T | undefined`.
+- **`noPropertyAccessFromIndexSignature`** requires bracket notation for index
+  signature properties, which forces awareness of dynamic access.
+- **`forceConsistentCasingInFileNames`** prevents case sensitivity problems across
+  operating systems.
+- **`allowUnusedLabels`** set to false errors on an unused label.
 
-The `noUnusedParameters` rule can reveal architectural problems:
+Prefer a narrow, justified `@ts-expect-error` over `@ts-ignore` when an upstream
+typing defect cannot yet be fixed. `@ts-expect-error` fails once the defect is
+fixed, so it cannot rot in place.
 
-**Example**: A function with an unused parameter often indicates the parameter belongs in a different layer. Strict mode catches these design issues early.
+Apply the same type-safety policy to tests. Use a deliberate test-only shim rather
+than weakening the global configuration.
 
----
-
-## Immutability, Pure Functions, and Composition
-
-Favour immutable data and pure functions throughout. Key TypeScript-specific notes:
-
-- Use `readonly` on all `type` properties and `ReadonlyArray<T>` for arrays
-- The compiler enforces immutability when `readonly` is used — leverage this
-- Factory functions (not classes) for object creation, supporting dependency injection
+`noUnusedParameters` also finds design problems. An unused parameter often means the
+parameter belongs in a different layer.
 
 ---
 
-## Schema-First at Trust Boundaries
+## Immutability
 
-### When Schemas ARE Required
-
-- Data crosses trust boundary (external → internal)
-- Type has validation rules (format, constraints)
-- Shared data contract between systems
-- Used in test factories (validate test data completeness)
-
-```typescript
-// API responses, user input, external data
-const UserSchema = z.object({
-  id: z.uuid(),
-  email: z.email(),
-});
-type User = z.infer<typeof UserSchema>;
-
-// Validate at boundary
-const user = UserSchema.parse(apiResponse);
-```
-
-### When Schemas AREN'T Required
-
-- Pure internal types (utilities, state)
-- Result/Option types (no validation needed)
-- TypeScript utility types (`Partial<T>`, `Pick<T>`, etc.)
-- Behavior contracts (interfaces - structural, not validated)
-- Component props (unless from URL/API)
-
-```typescript
-// ✅ CORRECT - No schema needed
-type Result<T, E> =
-  | { success: true; data: T }
-  | { success: false; error: E };
-
-// ✅ CORRECT - Interface, no validation
-interface UserService {
-  createUser(user: User): void;
-}
-```
+- Use `readonly` and `ReadonlyArray<T>` where immutability is part of the contract,
+  especially for shared domain values.
+- The compiler enforces shallow property immutability. It does not make nested
+  runtime values deeply immutable.
+- Choose factories or classes from invariant, lifecycle and project-convention
+  needs. Dependency injection does not require either form.
 
 ---
 
-## Branded Types
+## Checklist
 
-For type-safe primitives:
+Data modelling:
 
-```typescript
-type UserId = string & { readonly brand: unique symbol };
-type PaymentAmount = number & { readonly brand: unique symbol };
+- [ ] No boolean or optional combination can represent a state that should not exist
+- [ ] Each union variant carries only the data valid in that state
+- [ ] Every `switch` on a tag is exhaustive via a `never` default
+- [ ] Runtime checks appear only at a boundary or in a `never` default
+- [ ] Unions and schemas are owned per contract, version and context. External wire
+      shapes are translated, not adopted
+- [ ] Empty and constrained values are modelled in the type, not re-checked at each use
 
-// Type-safe at compile time
-const processPayment = (userId: UserId, amount: PaymentAmount) => {
-  // Implementation
-};
+Type safety:
 
-// ❌ Can't pass raw string/number
-processPayment('user-123', 100); // Error
-
-// ✅ Brand via a validating constructor — the ONE place an assertion is justified
-const toUserId = (raw: string): UserId => {
-  if (raw.length === 0) throw new Error('UserId cannot be empty');
-  return raw as UserId;
-};
-const toPaymentAmount = (raw: number): PaymentAmount => {
-  if (raw <= 0) throw new Error('PaymentAmount must be positive');
-  return raw as PaymentAmount;
-};
-
-processPayment(toUserId('user-123'), toPaymentAmount(100)); // OK
-```
-
-Never scatter `as UserId` through application code — the assertion lives only inside the constructor (or a schema's `transform`), so every branded value has passed validation.
-
----
-
-## Summary Checklist
-
-When writing TypeScript code, verify:
-
-- [ ] No `any` types - using `unknown` where type is truly unknown
-- [ ] No type assertions without justification
-- [ ] Using `type` for data structures with `readonly`
-- [ ] Using `interface` for behavior contracts
-- [ ] Schemas defined once, not duplicated
-- [ ] Strict mode enabled with all checks passing
-- [ ] Immutability via `readonly`/`ReadonlyArray`; pure functions and factory functions preferred
+- [ ] No `any`. Unavoidable interop is narrow, named and explained
+- [ ] No type assertions outside a validating constructor or a schema `transform`
+- [ ] `type` and `interface` follow repository convention, or the required semantics
+- [ ] `strict` is enabled, and further flags follow the repository's policy
+- [ ] `readonly` and `ReadonlyArray` used where immutability is part of the contract

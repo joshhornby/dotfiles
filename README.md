@@ -68,8 +68,7 @@ Claude loads these automatically when a task matches; invoke one directly with `
 | `to-issues` | Break a plan or PRD into independently-grabbable issues |
 | `grill-me` | Stress-test a plan or design by being interviewed until it holds up |
 | `prototype` | Throw together a quick prototype to sanity-check a design before committing |
-| `impossible-states` | Model data so invalid states can't be constructed (discriminated unions) |
-| `typescript-strict` | Write or review TypeScript with strict-mode, schema-first patterns |
+| `typescript-strict` | Model state as discriminated unions, then hold it with branded types, boundary schemas and strict flags |
 | `technical-writing` | Write developer-facing docs — READMEs, guides, proposals, PR descriptions |
 | `josh-writing-voice` | Apply my personal voice to prose I publish, then run the humanizer pass |
 | `humanizer` | Strip AI tells from any text to make it read as human-written |

@@ -30,8 +30,13 @@ humanizer as the cleanup pass.
    lists. Only use a list when the items are genuinely parallel and discrete (e.g. steps,
    options). Never turn an argument or a narrative into bullets. Never format ideas into a
    table unless the data is genuinely tabular.
-3. **Short sentences.** One idea each. Break long sentences in two. Vary rhythm so it
-   doesn't read like a metronome.
+3. **Rhythm over length.** There is no word limit. A sentence may run as long as the
+   thought it carries, provided the parts belong together. Break a sentence in two when it
+   holds two ideas, not when it passes some count. What matters is the mix: long sentences
+   for the explaining, short ones for the turns in the argument. Check the spread before
+   finishing. If nearly every sentence sits in the same band the prose reads as
+   machine-made, and the short lines stop landing because nothing around them is long
+   enough to make them land.
 4. **Active voice.** "We shipped it", not "it was shipped".
 5. **British spelling.** Always (`realise`, `behaviour`, `colour`, `optimise`).
 6. **Show, don't assert.** A concrete example or number beats an adjective. Cut

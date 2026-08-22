@@ -75,5 +75,11 @@ Claude loads these automatically when a task matches; invoke one directly with `
 | `diagrams` | Create diagrams and visualisations (Mermaid, Graphviz, and more) |
 | `expectations` | Capture learnings, gotchas, and decisions into the right docs while fresh |
 | `claude-doctor` | Analyse recent learnings and open a PR to improve this Claude setup |
+| `testing` | Write behaviour-driven tests — factories, file structure, what to assert |
+| `mutation-testing` | Prove the tests catch bugs with Stryker before a PR goes up |
+
+`testing` and `mutation-testing` come from [Paul Hammond's dotfiles][citypaul]
+under the MIT licence. Each folder holds a `LICENSE` file with the attribution.
 
 [stow]: https://www.gnu.org/software/stow/
+[citypaul]: https://github.com/citypaul/.dotfiles

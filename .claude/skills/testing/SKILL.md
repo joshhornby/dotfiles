@@ -1,11 +1,11 @@
 ---
 name: testing
-description: Testing patterns for behavior-driven tests. Use when writing tests, creating test factories, structuring test files, or deciding what to test. Do NOT use for UI-specific testing (see front-end-testing or react-testing skills).
+description: Testing patterns for behavior-driven tests. Use when writing tests, creating test factories, structuring test files, or deciding what to test. Do NOT use for UI-specific testing.
 ---
 
 # Testing Patterns
 
-For verifying test effectiveness through mutation analysis, load the `mutation-testing` skill. Use its mutator rules while planning and writing tests, but defer the automated mutation harness until the end-of-phase PR-readiness gate. For evaluating test quality against Dave Farley's properties, load the `test-design-reviewer` skill.
+For verifying test effectiveness through mutation analysis, load the `mutation-testing` skill. Use its mutator rules while planning and writing tests, but defer the automated mutation harness until the end-of-phase PR-readiness gate.
 
 ## Core Principle
 
@@ -86,7 +86,7 @@ Never test implementation details. Test behavior through the subject's public in
 | Browser/frontend behavior | Navigation, accessible UI, browser lifecycle, and browser-observed network |
 | User journey | Accessible user actions and user-visible outcomes across the real journey |
 
-An HTTP endpoint can be public and still be the **wrong** interface for a browser claim: a "user creates X" test that calls the endpoint directly proves an HTTP contract while bypassing the UI handler, cookie policy, CSRF/Fetch Metadata checks, redirects, loading/error state, and rendering — and stays green when any of those break. Test names, comments, CI step labels, docs, and PR prose must state the **narrowest evidence actually proved**. For the E2E evidence model, request observation, and the direct-transport audit, load the `front-end-testing` skill's `resources/playwright-e2e.md`.
+An HTTP endpoint can be public and still be the **wrong** interface for a browser claim: a "user creates X" test that calls the endpoint directly proves an HTTP contract while bypassing the UI handler, cookie policy, CSRF/Fetch Metadata checks, redirects, loading/error state, and rendering — and stays green when any of those break. Test names, comments, CI step labels, docs, and PR prose must state the **narrowest evidence actually proved**.
 
 ### Examples
 
@@ -178,7 +178,7 @@ describe('processPayment', () => {
 
 ## Do Not Extract Merely To Mirror Tests
 
-Do not extract a function into its own file merely to give it a matching unit test. Extract when it creates a coherent contract or seam, improves readability, represents shared **knowledge** (see the `refactoring` skill), or separates responsibilities. If difficulty testing a behavior exposes a real dependency seam, use `finding-seams` rather than hiding the problem behind implementation-detail tests.
+Do not extract a function into its own file merely to give it a matching unit test. Extract when it creates a coherent contract or seam, improves readability, represents shared **knowledge**, or separates responsibilities. If difficulty testing a behavior exposes a real dependency seam, fix the seam rather than hiding the problem behind implementation-detail tests.
 
 Inline code can often be exercised through its consumer's behavioral tests. If that makes failures too broad or a dependency impossible to control, treat the difficulty as design evidence and introduce a coherent seam rather than a helper created only to mirror a test file.
 

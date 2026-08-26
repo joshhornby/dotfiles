@@ -149,6 +149,11 @@ Each agent holds its own context. Nothing is shared by default. Do not assume an
 agent knows what you found. The knowledge that must outlive a context window goes into
 tasks, code, tests, commits and short messages.
 
+A run can stop at any point. A spend limit, a lost context or a killed agent all end a
+turn in the middle of the work. So read the current state on disk before you edit.
+Another agent, or an earlier run of you, may have finished part of this already. Your
+context is a memory of the repository, not the repository.
+
 ## The human
 
 Human attention is scarce. Make as much useful progress as you can without it.

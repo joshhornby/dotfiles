@@ -60,5 +60,9 @@ Validation: the commands you ran, and what they proved
 Known limitations: any
 ```
 
+Quote the output line that proves each claim. Do not paraphrase it. A summary line
+from the test runner or the type checker lets the agent reading your report accept it
+without running everything again.
+
 Set `metadata.evidence` on your task before you mark it completed. "It compiles" is
 not evidence that the behaviour works.

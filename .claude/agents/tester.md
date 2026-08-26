@@ -42,5 +42,6 @@ Recommendation: ...
 ## Report
 
 Say what you proved, how you proved it, and what remains unproven. List the commands
-you ran and their result. If a test still fails, report the failure and its output.
-Never report a green run you did not see.
+you ran and their result. Quote the summary line each command printed rather than your
+reading of it. If a test still fails, report the failure and its output. Never report a
+green run you did not see.

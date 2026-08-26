@@ -38,10 +38,23 @@ by stow. Team skills come from the separate `journey-engineering` plugin.
 spelling, pinned dependency versions, no-attribution commits, and behaviour-over-mocks
 testing. Project-specific conventions belong in that project's own `CLAUDE.md`, not here.
 
-`.claude/hooks/house-rules.py` is the only hook. It runs on PreToolUse and denies the call
-when the text about to be written reads as AI output. It reads markdown, code comments,
-git commit and `gh` message text, and MCP text fields. It also blocks the `any` type in
-new TypeScript. Mark a line `// any: <reason>` when no real type exists.
+`.claude/hooks/house-rules.py` runs on PreToolUse and denies the call when the text
+about to be written reads as AI output. It reads markdown, code comments, git commit and
+`gh` message text, and MCP text fields. It also blocks the `any` type in new TypeScript.
+Mark a line `// any: <reason>` when no real type exists.
+
+`.claude/hooks/team-guard.py` runs on the agent-team events. It blocks a task completion
+that carries no evidence, stops a teammate going quiet while work is still on the board,
+and writes a run log to `~/.claude/team-guard/run-log.jsonl`. Every check fails open, so
+a run never stalls because the guard could not read its state.
+
+#### Agents
+
+`.claude/agents/` holds the reusable roles for the multi-agent engineering
+organisation: `shadow-lead`, `project-lead`, `implementer`, `tester`, `researcher` and
+`reviewer`. The shared protocol lives in the "Engineering organisation" section of
+`.claude/CLAUDE.md`. Read `.claude/agents/README.md` for the role table and the
+Agent Teams requirement.
 
 #### Commands
 
@@ -49,6 +62,7 @@ Type `/<name>` to run one.
 
 | Command | When to use |
 |---------|-------------|
+| `/outcome` | Give an engineering outcome to an agent team and let it run to completion, with a watchdog and an evidence gate |
 | `/commit-and-push` | Commit all changes with an auto-generated conventional message, then push |
 | `/ship-and-watch` | Commit, push, open a PR, then watch CI and review comments — never auto-merges |
 | `/resolve-pr-comments` | Pull PR and Copilot review comments, triage them, apply the chosen fixes as a fresh commit, then resolve the threads |

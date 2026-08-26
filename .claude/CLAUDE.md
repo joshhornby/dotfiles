@@ -109,9 +109,16 @@ and `TaskGet` read the graph.
 
 Tasks hold state. Messages carry news. Do not use messages as the state store.
 
+Assume a message can be lost. Delivery to one agent can fail for a whole run. Put
+anything another agent must act on into the shared state as well, and treat the message
+as a nudge to re-read. When you send a finding and nothing changes, write it into the
+state and tell the lead.
+
 When the task tools are not present, Agent Teams is off in this session. Hold the same
 graph in your own tracking, keep the same fields, and require the same evidence. Write
 the graph to a file when the run is long enough that a context window will not hold it.
+The lead owns that file. A worker updates only its own section. A worker never waits for
+a task record that no tool can create.
 
 ## Messages
 

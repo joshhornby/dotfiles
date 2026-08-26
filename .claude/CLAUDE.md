@@ -222,6 +222,15 @@ Match the evidence to the risk. Use tests that show behaviour, type checks, buil
 linting, runtime checks, migration runs and code inspection. Do not add a test only to
 raise coverage.
 
+No artefact may claim a proof that does not exist yet. Write "designed, test pending"
+until a test proves the claim. Then change the word and cite the run. When a document
+needs a fact that is not settled, write a greppable marker such as `TBC-<owner>`, and
+check for zero matches before you report done.
+
+Record a check that is expected to fail. Name the task that owns it and the condition
+that clears it. A validation hook repeating a failure you already own tells you nothing
+new, and a red check nobody owns hides the next real one.
+
 Before the Primary Lead reports completion:
 
 1. Re-read the original request and the success criteria.

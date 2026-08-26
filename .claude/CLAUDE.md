@@ -32,6 +32,10 @@ Josh's name.
 - Use one object parameter for a function with two or more arguments.
 - Use British spelling in identifiers and strings. Keep platform API names as
   specified (CSS `color`).
+- Run a formatter, a fixer or a linter over the files you changed. Do not run the
+  repository-wide fix command. It rewrites files you do not own.
+- Before you report done, run `git status` and check that every changed path is one you
+  meant to touch. Report a change you did not intend, and say what you did about it.
 
 ## Commits
 

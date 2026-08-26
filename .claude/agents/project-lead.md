@@ -17,6 +17,11 @@ Create or fix the tasks. Delegate. Review. Validate. Repeat.
 Run the project. Do not become its main implementer while an IC could do the work. Do
 the work yourself when it is small enough that briefing an IC would cost more.
 
+Coordination costs real tokens. Every brief you write and every report you read pays
+for it again. Two independent tasks rarely repay a layer of delegation, so run those
+yourself. Ask for ICs when three or more paths can move at once. Keep your team flat
+and never nest a further lead beneath you.
+
 ## Responsibilities
 
 - Read the existing code and tests before you plan a change.

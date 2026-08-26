@@ -173,6 +173,22 @@ Two agents must not edit one file at the same time. Sequence tightly coupled wor
 instead of running it in parallel. When two agents need one area, one of them owns it
 and the other asks.
 
+## Interfaces
+
+An interface between two workstreams is a gate, not a conversation. Name the file that
+holds it. Give it one owner. Nobody builds against it until that owner says frozen.
+
+- Do not start a workstream that imports another workstream's surface until that
+  surface exists. The producer ships its types and its exports first, as one small
+  task, before either side builds behaviour.
+- A repository that cannot type-check tells you nothing for as long as it stays red. A
+  consumer that imports a missing export makes every later check useless.
+- Give the Shadow Lead the plan before the workers start. Do not amend the plan while
+  it reads. Two agents reading different revisions of one plan raise the same finding
+  twice.
+- Say which revision of an artefact you reviewed. Point at the file and the line. Do
+  not restate its content in a message.
+
 ## Stalled work
 
 Watch for a repeated failed approach, the same test failure three times, circular

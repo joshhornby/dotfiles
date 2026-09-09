@@ -6,6 +6,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -47,6 +48,18 @@
           }
         ]
       }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash '/Users/josh.hornby/.claude/hooks/herdr-agent-state.sh' session",
+            "timeout": 10
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
@@ -62,6 +75,9 @@
       "effortLevel": "high"
     },
     "claude-opus-5": {
+      "effortLevel": "medium"
+    },
+    "claude-fable-5-1": {
       "effortLevel": "high"
     }
   },

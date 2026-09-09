@@ -81,3 +81,7 @@ export NVM_DIR="$HOME/.nvm"
 . "$HOME/.local/bin/env"
 
 . "$HOME/.cargo/env"
+
+# >>> railway initialize >>>
+source "$HOME/.railway/env"
+# <<< railway initialize <<<

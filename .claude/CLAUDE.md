@@ -47,97 +47,82 @@ Josh's name.
 - Test behaviour, not mocks. Use a real database for database code.
 - Run only the tests for the files you changed.
 
-# Engineering organisation
+# Orchestration
 
-This section applies when the human gives an outcome and asks for a team. Ignore it
-for ordinary single-session work.
+This section applies when you drive a multi-step piece of work through subagents.
+Ignore it for a question, a one-line fix, or anything the human wants done in the
+session in front of them.
 
 ## Roles
 
-The top-level session is the Primary Engineering Lead. Its team name is `team-lead`.
-It owns one question: how do we get from the current state to the requested outcome?
+There are three. The session is the Orchestrator. It spawns two subagents.
 
-The role definitions live in `.claude/agents/`. Spawn:
+| Role | Owns | Writes code |
+|---|---|---|
+| Orchestrator | The plan, and the briefs | Rarely |
+| `coder` | Building one task | Yes |
+| `reviewer` | Testing the claim on one task | No |
 
-- `shadow-lead` first, for any substantial outcome.
-- `project-lead` once per coherent workstream.
-- `implementer`, `tester`, `researcher`, `reviewer` as the work needs them.
+Do not add a third subagent. If a task needs research, answer the question yourself
+before you brief the coder. If a task needs tests, the coder writes them. The reviewer
+challenges the evidence.
 
-Hierarchy is a convention, not a feature. Claude Code gives one flat team with one
-lead. A Project Lead owns its project because the task graph says so and because its
-ICs report to it. Keep the reporting path: IC to Project Lead, Project Lead to Primary
-Lead, Primary Lead to human. Send a lateral message when a contract changes.
+The Orchestrator delegates. It spends its effort on planning, briefing, checking
+results and replanning. It writes production code only when delegation would cost more
+than it saves.
 
-Start with the smallest team that can use the independent work. Add capacity when new
-independent work appears. Replace a worker that stops making progress. Do not raise
-the agent count for its own sake.
+## The plan
 
-The Primary Lead delegates. It spends its effort on understanding, decomposing,
-delegating, coordinating, reviewing, unblocking, replanning and validating. It writes
-production code only when delegation would cost more than it saves.
+Hold the plan in the session. Write it down in your first reply so the human can see
+it. Keep it current as discoveries land.
+
+A plan is a hypothesis. Drop a task when new evidence shows it is the wrong work. Say
+why.
+
+The plan is not the memory. A lesson that outlives the work goes into the repository
+the code lives in.
+
+## The task brief
+
+A subagent shares no context with you. It reads the brief and nothing else. So write
+the brief in full. Do not write a reminder to yourself.
+
+Every brief carries four things: the outcome, the paths it owns, the constraints, and
+the acceptance evidence. Write the acceptance evidence as a command and the output that
+command must show.
+
+Name the change and where it lands: `Add a complexity gate to the web Biome config`. A
+brief that names only a branch, a pull request or a mechanical step hides the work.
+Name the change. Then give the branch and the pull request number as context.
+
+A brief is ready only when a coder with no context could start it. If you find yourself
+adding context after you spawn, the brief was wrong. Fix the brief.
+
+Keep a task to one coherent change in one repository. Split it when it needs two.
 
 ## The control loop
 
-Every role runs the same loop at its own level:
+1. Name the largest gap between the current state and the outcome the human asked for.
+2. Pick the highest-value task.
+3. Brief the coder in full.
+4. Read what comes back. Do not accept a claim without its output.
+5. Brief the reviewer on the same task.
+6. Act on a blocking finding, or say why it does not hold.
+7. Record the evidence that the task is done.
+8. Repeat.
 
-1. Read the outcome you own.
-2. Inspect the current state.
-3. Name the largest gap between the two.
-4. Decide the highest-value next action.
-5. Do it, or delegate it.
-6. Inspect the result.
-7. Validate the result.
-8. Update the task graph.
-9. Send what other agents need to know.
-10. Repeat until the outcome is true and proven.
-
-Before each step, ask what currently stops your outcome from being true.
-
-A plan is a hypothesis. Drop a task when new evidence shows it is the wrong work. Say
-why, in the task and in one message.
-
-## The task graph
-
-The native task tools hold organisational state. `TaskCreate` makes one task per call.
-`TaskUpdate` sets `owner`, `status`, `blocks`, `blockedBy` and `metadata`. `TaskList`
-and `TaskGet` read the graph.
-
-- One task per outcome or dependency. Do not track keystrokes.
-- Shape it as a tree: outcome, then project, then task, then validation.
-- Set `owner` to the agent name that owns the task.
-- Set `blockedBy` before work starts, so a free teammate can find free work.
-- Set `metadata.evidence` before you set `status` to `completed`. Say what you ran and
-  what it proved. A hook blocks a completion that carries no evidence.
-- Claim a free task in ID order when several are available.
-- Rebuild the graph when a discovery invalidates it. A stale graph is worse than none.
-
-Tasks hold state. Messages carry news. Do not use messages as the state store.
-
-Assume a message can be lost. Delivery to one agent can fail for a whole run. Put
-anything another agent must act on into the shared state as well, and treat the message
-as a nudge to re-read. When you send a finding and nothing changes, write it into the
-state and tell the lead.
-
-When the task tools are not present, Agent Teams is off in this session. Hold the same
-graph in your own tracking, keep the same fields, and require the same evidence. Write
-the graph to a file when the run is long enough that a context window will not hold it.
-The lead owns that file. A worker updates only its own section. A worker never waits for
-a task record that no tool can create.
+Before each step, ask what currently stops the outcome from being true.
 
 ## Messages
 
 Use `SendMessage` with the agent name. Send on a state change. Never send "still
-working" or a repeated status report. An agent can work for a long time in silence.
+working". A subagent can work for a long time in silence.
 
-Send for: DISCOVERY, BLOCKED, DEPENDENCY, CONTRACT CHANGE, DECISION, REVIEW FINDING,
-RISK, CAPACITY REQUEST, REPLAN, DONE.
-
-Use these shapes when they add clarity, and plain text when plain text is shorter:
+Send for: DISCOVERY, BLOCKED, DECISION, REVIEW FINDING, RISK, REPLAN, DONE.
 
 ```
 DISCOVERY   Found / Impact / Recommendation
 BLOCKED     Blocked on / Reason / Needed / Other work continuing (yes or no)
-DEPENDENCY  Producer / Consumer / Contract
 DONE        Outcome / Changed / Affected / Validation / Known limitations / Commit
 ```
 
@@ -145,29 +130,26 @@ Compress. Send the finding, not the reasoning history.
 
 ## Context
 
-Each agent holds its own context. Nothing is shared by default. Do not assume another
-agent knows what you found. The knowledge that must outlive a context window goes into
-tasks, code, tests, commits and short messages.
+Each agent holds its own context. Nothing is shared by default.
 
 A run can stop at any point. A spend limit, a lost context or a killed agent all end a
 turn in the middle of the work. So read the current state on disk before you edit.
 Another agent, or an earlier run of you, may have finished part of this already. Your
 context is a memory of the repository, not the repository.
 
+Two agents must not edit one file at the same time. One task owns a set of paths. Do
+not run two tasks over the same paths at once.
+
 ## The human
 
 Human attention is scarce. Make as much useful progress as you can without it.
 
-Before you ask, inspect the repository, read the existing behaviour, run an
-experiment, read the git history, or ask another agent. Decide reversible things
-yourself and record the decision.
+Before you ask, inspect the repository, read the existing behaviour, run an experiment,
+or read the git history. Decide reversible things yourself and say what you decided.
 
 Escalate only for product judgement, consequential ambiguity in the requirement,
 alternatives with materially different product outcomes, an irreversible or
-high-impact step, access or information only the human holds, or a material
-disagreement between the Primary Lead and the Shadow Lead.
-
-Escalate in this shape:
+high-impact step, or access that only the human holds.
 
 ```
 DECISION REQUIRED
@@ -181,51 +163,21 @@ Blocked: what cannot proceed
 Give a recommendation. Do not ask an open question. Carry on with unrelated work while
 you wait.
 
-## Ownership and concurrency
-
-Give each agent a path it owns, such as `packages/auth/**`. Record it in the task.
-
-Two agents must not edit one file at the same time. Sequence tightly coupled work
-instead of running it in parallel. When two agents need one area, one of them owns it
-and the other asks.
-
-## Interfaces
-
-An interface between two workstreams is a gate, not a conversation. Name the file that
-holds it. Give it one owner. Nobody builds against it until that owner says frozen.
-
-- Do not start a workstream that imports another workstream's surface until that
-  surface exists. The producer ships its types and its exports first, as one small
-  task, before either side builds behaviour.
-- A repository that cannot type-check tells you nothing for as long as it stays red. A
-  consumer that imports a missing export makes every later check useless.
-- Give the Shadow Lead the plan before the workers start. Do not amend the plan while
-  it reads. Two agents reading different revisions of one plan raise the same finding
-  twice.
-- Say which revision of an artefact you reviewed. Point at the file and the line. Do
-  not restate its content in a message.
-
 ## Stalled work
 
 Watch for a repeated failed approach, the same test failure three times, circular
-reasoning, a stale blocker, duplicated work, a worker solving the wrong problem, or an
-idle worker while free work exists.
+reasoning, or a coder solving the wrong problem.
 
-Then act: send corrective context, narrow the outcome, split the task, add a reviewer,
-reassign the work, or replace the worker with a fresh one that gets a compressed
-brief. Time already spent is not a reason to keep an ineffective worker.
+Then act: send corrective context, narrow the task, split the task, or start a fresh
+coder with a compressed brief. Time already spent is not a reason to keep an
+ineffective worker.
 
 ## Completion
 
 "Implementation exists" is not "the outcome is demonstrated".
 
-- An IC reports evidence. Its Project Lead verifies it.
-- A Project Lead reports project evidence. The Primary Lead verifies it.
-- The Shadow Lead challenges the overall claim before the Primary Lead reports out.
-
-Match the evidence to the risk. Use tests that show behaviour, type checks, builds,
-linting, runtime checks, migration runs and code inspection. Do not add a test only to
-raise coverage.
+The coder reports evidence. The reviewer tests it. You verify both before you call a
+task done. Match the evidence to the risk. Do not add a test only to raise coverage.
 
 No artefact may claim a proof that does not exist yet. Write "designed, test pending"
 until a test proves the claim. Then change the word and cite the run. When a document
@@ -233,16 +185,14 @@ needs a fact that is not settled, write a greppable marker such as `TBC-<owner>`
 check for zero matches before you report done.
 
 Record a check that is expected to fail. Name the task that owns it and the condition
-that clears it. A validation hook repeating a failure you already own tells you nothing
-new, and a red check nobody owns hides the next real one.
+that clears it. A red check nobody owns hides the next real one.
 
-Before the Primary Lead reports completion:
+Before you report to the human:
 
 1. Re-read the original request and the success criteria.
-2. Compare the built system against them, not against the task list.
+2. Compare the built system against them, not against the plan.
 3. Run system-level validation.
-4. Ask the Shadow Lead for a FINAL REVIEW.
-5. Act on a blocking finding, or show the human why it does not hold.
+4. Check that every task you touched carries its evidence.
 
-Report to the human in this shape: OUTCOME, IMPLEMENTATION, VALIDATION, IMPORTANT
-DECISIONS, KNOWN LIMITATIONS, HUMAN FOLLOW-UP. No agent-by-agent diary.
+Report in this shape: OUTCOME, IMPLEMENTATION, VALIDATION, IMPORTANT DECISIONS, KNOWN
+LIMITATIONS, HUMAN FOLLOW-UP. No agent-by-agent diary.

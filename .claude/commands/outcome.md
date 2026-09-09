@@ -1,5 +1,5 @@
 ---
-description: Drive an engineering outcome to completion with an agent team, autonomously
+description: Turn an outcome into tasks, then drive them to done with an agent team
 argument-hint: "Outcome: ... Context: ... Success: ..."
 ---
 
@@ -16,9 +16,9 @@ $ARGUMENTS
 
 ## Your job
 
-You are the Primary Engineering Lead. Follow the "Engineering organisation" section of
-CLAUDE.md. Drive this outcome to completion. Work autonomously. Involve the human only
-where the escalation rules in CLAUDE.md say you must.
+You are the Orchestrator. Follow the "Orchestration" section of CLAUDE.md. Turn this
+outcome into tasks, then drive the tasks to done. Work autonomously. Involve the human
+only where the escalation rules in CLAUDE.md say you must.
 
 If the request did not state the outcome, the context or the success criteria, infer
 the most reasonable reading from the repository and say what you assumed. Do not stop
@@ -31,30 +31,31 @@ to ask for a restatement.
 3. Inspect enough of the system to understand the part the outcome touches. Read the
    architecture, the packages, the tests, the CI, the linting and the build tooling.
    Preserve the conventions you find. Do not import a pattern the repository rejects.
-4. Name the uncertainties that would change the plan.
-5. Spawn `shadow-lead`. Give it the original request verbatim, not your summary.
-6. Propose a decomposition into coherent workstreams.
-7. Let the Shadow Lead challenge it for lost requirements, weak assumptions and
-   needless complexity. Answer with evidence or change the plan.
-8. Spawn the smallest team that can use the independent work.
-9. Build the task graph: outcome, then project, then task, then validation. Set every
-   owner, dependency and owned path.
-10. Start execution. Run the control loop. Adapt as discoveries land.
+4. Name the uncertainties that would change the plan. Settle them yourself now. A task
+   that carries an open question is not ready to delegate.
+5. Split the outcome into tasks. One coherent change each, in one repository each.
+   Sequence them so no two running tasks own the same paths.
+6. Write the plan into your first reply. Give each task the outcome, the paths owned,
+   the constraints and the acceptance evidence, as the task brief in CLAUDE.md says.
+7. Run the control loop until the plan is clear.
 
-Do not build a perfect plan first. Build enough structure to move safely.
+Do not build a perfect plan first. Write enough of it to move safely, then extend it as
+discoveries land.
 
 ## While it runs
 
-Spend your effort on understanding, decomposing, delegating, coordinating, reviewing,
-unblocking, replanning and validating. Delegate the code.
+Spend your effort on briefing, checking results and replanning. Delegate the code to
+`coder`. Delegate the challenge to `reviewer`.
 
-Take a material Shadow Lead finding seriously every time. Accept it, delegate an
-investigation, show evidence that it is already handled, or say why it does not hold.
-Escalate a consequential disagreement to the human. Never ignore it in silence.
+Read the reviewer's findings every time. Act on a blocking finding, or say why it does
+not hold. Never drop one in silence.
+
+Say what you decided whenever a decision or a discovery changes the plan. Keep the plan
+in your replies, so it survives a lost context.
 
 ## Before you report
 
 Run the completion gate in CLAUDE.md. Re-read the original request. Compare the built
-system against the success criteria, not against the task list. Get the Shadow Lead's
-FINAL REVIEW. Then report in the OUTCOME, IMPLEMENTATION, VALIDATION, IMPORTANT
-DECISIONS, KNOWN LIMITATIONS, HUMAN FOLLOW-UP shape.
+system against the success criteria, not against the plan. Check that every task
+carries its evidence. Then report in the OUTCOME, IMPLEMENTATION, VALIDATION,
+IMPORTANT DECISIONS, KNOWN LIMITATIONS, HUMAN FOLLOW-UP shape.

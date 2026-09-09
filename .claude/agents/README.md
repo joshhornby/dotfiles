@@ -1,41 +1,28 @@
 # Agents
 
-This directory holds the reusable agent roles for the engineering organisation.
-`~/.claude/agents` points at it, so the roles are available in every project.
+This directory holds the two subagent roles. `~/.claude/agents` points at it, so the
+roles are available in every project.
 
-The shared protocol lives in one place: the "Engineering organisation" section of
-`.claude/CLAUDE.md`. It covers the control loop, the task graph, the message shapes,
-the escalation contract, ownership and the completion gate. Every role follows it.
-
-Each file here holds only what is specific to the role: what it owns, what it must
-not do, how it communicates and what evidence it owes.
-
-| Role | Owns | Spawn it when |
+| Role | Owns | Tools |
 |---|---|---|
-| `shadow-lead` | Is the team converging on the outcome? | Any substantial outcome. First. |
-| `project-lead` | One coherent workstream outcome. | The outcome splits into projects. |
-| `implementer` | One scoped implementation outcome. | There is code to write. |
-| `tester` | Proving a behaviour works. | A claim needs evidence. |
-| `researcher` | One specific uncertainty. | Reading the code has not settled it. |
-| `reviewer` | One implementation or diff. | A change needs a second technical read. |
+| `coder` | Building one task, and proving it | Full |
+| `reviewer` | Testing the claim on one task | Read-only |
 
-The top-level session is the Primary Engineering Lead. It has no file here, because it
-is the session itself. Its behaviour comes from `CLAUDE.md` and from `/outcome`.
+The session itself is the Orchestrator. It has no file here, because it is the session.
+Its behaviour comes from the "Orchestration" section of `.claude/CLAUDE.md` and from
+`/outcome`.
 
-`shadow-lead`, `researcher` and `reviewer` carry no Edit or Write tool. That is
-deliberate. It stops a review or an investigation from turning into delivery work.
+The shared protocol lives in that section: the task brief, the control loop, the
+message shapes, the escalation contract and the completion gate. Both roles follow it.
+Each file here holds only what is specific to the role.
 
-## Adding a role
+`reviewer` carries no Edit or Write tool. That is deliberate. It stops a review turning
+into delivery work.
 
-Add one only when it gives reusable value. A one-off brief belongs in the prompt, not
-in a new file. Keep the new file short, and do not copy the protocol into it.
+## Do not add a third role
 
-## Requirements
+Two is the design, not a starting point. A need for a researcher means the brief went
+out with an open question in it. A need for a tester means the coder skipped its own
+evidence. Fix the brief.
 
-The task tools and teammate messaging come from Agent Teams, which is experimental.
-`.claude/settings.json` turns it on with `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS`. Set
-`teammateMode` with `/config` to choose how teammates run: `in-process`, `tmux`,
-`iterm2` or `auto`.
-
-Without Agent Teams the roles still work as ordinary subagents. You lose the shared
-task graph and the teammate mailbox, so the Primary Lead has to hold that state.
+A one-off instruction belongs in the brief, not in a new file.

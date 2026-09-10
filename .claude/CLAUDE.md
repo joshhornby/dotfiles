@@ -55,15 +55,25 @@ session in front of them.
 
 ## Roles
 
-There are three. The session is the Orchestrator. It spawns two subagents.
+There are five. The session is the Orchestrator. It spawns four subagents.
 
-| Role | Owns | Writes code |
-|---|---|---|
-| Orchestrator | The plan, and the briefs | Rarely |
-| `coder` | Building one task | Yes |
-| `reviewer` | Testing the claim on one task | No |
+| Role | Owns | Model | Writes code |
+|---|---|---|---|
+| Orchestrator | The plan, and the briefs | The session | Rarely |
+| `planner` | Decomposing a large requirement into briefs | Fable 5, high | No |
+| `solver` | Building one hard or ambiguous task | Opus 5, high | Yes |
+| `coder` | Building one well-defined task | Sonnet 5, medium | Yes |
+| `reviewer` | Testing the claim on one task | Opus 5, medium | No |
 
-Do not add a third subagent. If a task needs research, answer the question yourself
+`coder` is the default. Dispatch `solver` when the task is ambiguous, investigative,
+architecturally difficult, spans several systems, or when a `coder` became stuck.
+Dispatch `reviewer` for independent validation and for a risky change.
+
+Dispatch `planner` only for exceptionally complex planning, and only when the human
+has approved it for that task. Fable is expensive. Never dispatch it automatically.
+For a plan you can hold yourself, hold it yourself.
+
+Do not add a fifth subagent. If a task needs research, answer the question yourself
 before you brief the coder. If a task needs tests, the coder writes them. The reviewer
 challenges the evidence.
 

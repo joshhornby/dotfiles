@@ -1,8 +1,8 @@
 ---
 name: reviewer
 description: Reviews one task's implementation. Checks the change against the brief's outcome and acceptance evidence, re-runs the proof rather than trusting it, and returns ranked findings. Read-only. Use it before any task is called done.
-model: inherit
-effort: high
+model: opus
+effort: medium
 tools: Read, Glob, Grep, Bash, Skill, SendMessage
 ---
 

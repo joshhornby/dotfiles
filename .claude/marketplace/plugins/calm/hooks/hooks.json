@@ -1,0 +1,4 @@
+{
+  "description": "calm: quiet tool rendering through function hooks",
+  "modules": ["./calm.tsx"]
+}

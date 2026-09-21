@@ -1,0 +1,8 @@
+{
+  "name": "calm",
+  "version": "0.1.0",
+  "description": "Hide tool noise and show one live status line while Claude works. Needs CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1.",
+  "author": {
+    "name": "Josh Hornby"
+  }
+}

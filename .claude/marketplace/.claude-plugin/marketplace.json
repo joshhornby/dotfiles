@@ -1,0 +1,15 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dotfiles",
+  "description": "Local plugins kept in Josh's dotfiles",
+  "owner": {
+    "name": "Josh Hornby"
+  },
+  "plugins": [
+    {
+      "name": "calm",
+      "source": "./plugins/calm",
+      "description": "Hide tool noise and show one live status line while Claude works"
+    }
+  ]
+}

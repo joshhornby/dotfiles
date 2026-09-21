@@ -75,6 +75,13 @@ Load these when you are designing, not by habit.
 that have explicitly adopted them. Do not infer either from a generic adapter
 or an interface.
 
+## Decision support
+
+- `war-council` convenes standing and task-specific expert personas to
+  critique a decision, then synthesises their positions into a ranked verdict.
+  Use it for strategy, pricing, product direction or any plan you want
+  stress-tested. Source: zapier/wade-skills.
+
 ## Support
 
 - `find-skills` discovers and installs skills from the wider ecosystem.

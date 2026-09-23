@@ -1,7 +1,7 @@
 ---
 name: coder
 description: Builds one task to completion. Reads the brief as its only instruction, inspects the code on disk, implements inside the paths the brief owns, proves the acceptance evidence and reports what it ran. Use it for every change to code, tests, infrastructure or configuration.
-model: sonnet
+model: opus
 effort: medium
 ---
 

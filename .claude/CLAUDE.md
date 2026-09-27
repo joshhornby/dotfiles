@@ -46,9 +46,3 @@ Josh's name.
 
 - Test behaviour, not mocks. Use a real database for database code.
 - Run only the tests for the files you changed.
-
-# Orchestration
-
-When you drive a multi-step piece of work through subagents, load the
-`orchestration` skill first. It holds the roles, the brief format, the control
-loop and the completion rules.

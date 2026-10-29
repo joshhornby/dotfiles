@@ -85,3 +85,14 @@ export NVM_DIR="$HOME/.nvm"
 # >>> railway initialize >>>
 source "$HOME/.railway/env"
 # <<< railway initialize <<<
+
+# bun completions
+[ -s "/Users/josh.hornby/.bun/_bun" ] && source "/Users/josh.hornby/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# Added by flyctl installer
+export FLYCTL_INSTALL="/Users/josh.hornby/.fly"
+export PATH="$FLYCTL_INSTALL/bin:$PATH"

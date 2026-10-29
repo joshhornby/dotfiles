@@ -1,15 +1,54 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {
+    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1",
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
     "CLAUDE_CODE_SUBAGENT_MODEL": "opus",
-    "CLAUDE_CODE_ENABLE_FUNCTION_HOOKS": "1"
+    "AWS_PROFILE": "agent-products-development"
   },
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "deny": [
+      "Bash(aws *--profile Products-Control*)",
+      "Bash(AWS_PROFILE=Products-Control *)",
+      "Bash(aws *--profile personal*)",
+      "Bash(AWS_PROFILE=personal *)",
+      "Bash(aws *--profile default*)",
+      "Bash(AWS_PROFILE=default *)"
+    ]
   },
-  "model": "claude-fable-5-1[1m]",
+  "model": "opus[1m]",
   "hooks": {
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Edit|Write|MultiEdit|Bash|mcp__.*",
@@ -19,15 +58,84 @@
             "command": "python3 \"$HOME/.claude/hooks/house-rules.py\""
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "StopFailure": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/Users/josh.hornby/.config/iterm2/cc-status"
+          }
+        ]
       }
     ]
   },
   "enabledPlugins": {
+    "calm@dotfiles": true,
     "code-simplifier@claude-plugins-official": false,
     "compound-engineering@every-marketplace": false,
-    "vercel@claude-plugins-official": true,
     "mattpocock-skills@claude-plugins-official": true,
-    "calm@dotfiles": true
+    "vercel@claude-plugins-official": true,
+    "swift-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "dotfiles": {
@@ -43,11 +151,14 @@
     "claude-fable-5": {
       "effortLevel": "high"
     },
+    "claude-fable-5-1": {
+      "effortLevel": "medium"
+    },
     "claude-opus-5": {
       "effortLevel": "medium"
     },
-    "claude-fable-5-1": {
-      "effortLevel": "high"
+    "claude-opus-5-5": {
+      "effortLevel": "medium"
     }
   },
   "tui": "fullscreen",

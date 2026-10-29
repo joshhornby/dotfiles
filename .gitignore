@@ -1,3 +1,5 @@
 .idea
 .DS_Store
 .claude/skills/synced/
+.claude/hooks/__pycache__/
+.claude/skills/.trash/
